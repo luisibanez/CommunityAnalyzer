@@ -18,14 +18,14 @@ for message in mbox:
 
     if message_from:
       # remove charactes from email source after the open parenthesis
-      message_from = message_from.split("(")[0]
+      sender = message_from.split("(")[0].lower()
 
       messages[message_id]['From']={}
-      messages[message_id]['From'][message_from]=''
+      messages[message_id]['From'][sender]=''
 
-      people[message_from]={}
-      people[message_from]['Send']={}
-      people[message_from]['Send'][message_id]=''
+      people[sender]={}
+      people[sender]['Send']={}
+      people[sender]['Send'][message_id]=''
 
     if message_date:
       messages[message_id]['Date']={}
@@ -55,7 +55,7 @@ for message in mbox:
           people[recipient]['Received'][message_id]=''
 
           # remove charactes from email source after the open parenthesis
-          sender = message_from.split("(")[0]
+          sender = message_from.split("(")[0].lower()
           people[recipient]['ReceivedFrom'][sender][message_id]=''
           people[sender]['ReceivedFrom'][recipient][message_id]=''
 
@@ -65,9 +65,19 @@ for message in mbox:
 # sort the people dictionary by key
 sorted(people, key=people.get)
 
+# list of people with number of emails sents and received
 for personid in people:
-  print "Person ",personid
-  print people[personid]
+  person = people[personid]
+  if person:
+    sent = person['Send']
+    number_of_emails_sent = len(sent)
+    number_of_emails_received = 0
+    if 'Received' in person:
+      received = person['Received']
+      number_of_emails_received = len(received)
+    print personid,' ',number_of_emails_sent,' ',number_of_emails_received
+
+
 
 print "Number of messages ",len(messages)
 print "Number of people ",len(people)
