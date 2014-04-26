@@ -47,11 +47,14 @@ for message in mbox:
       previous_message = messages[message_reply]
 
       if previous_message:
-        recipient = previous_message['From'].itervalues().next()
+        recipientlist = previous_message['From']
 
-        if recipient:
+        if recipientlist:
+
+          recipient = recipientlist.iterkeys().next()
 
           current_message = messages[message_id]
+
           if 'To' not in current_message:
             current_message['To']={}
 
@@ -66,8 +69,16 @@ for message in mbox:
 
           # remove charactes from email source after the open parenthesis
           sender = message_from.split("(")[0].lower()
-          people[recipient]['ReceivedFrom'][sender][message_id]={}
-          people[sender]['ReceivedFrom'][recipient][message_id]={}
+
+          if 'ReceivedFrom' not in person:
+            person['ReceivedFrom']={}
+
+          receivedmessages = person['ReceivedFrom']
+
+          if sender not in receivedmessages:
+            receivedmessages[sender]={}
+
+          receivedmessages[sender][message_id]={}
 
 
 
