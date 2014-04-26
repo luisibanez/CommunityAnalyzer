@@ -17,6 +17,9 @@ for message in mbox:
     messages[message_id]={}
 
     if message_from:
+      # remove charactes from email source after the open parenthesis
+      message_from = message_from.split("(")[0]
+
       messages[message_id]['From']={}
       messages[message_id]['From'][message_from]=''
 
@@ -51,14 +54,21 @@ for message in mbox:
           people[recipient]['Received']={}
           people[recipient]['Received'][message_id]=''
 
-          sender = message_from
-          people[recipient]['ReceivedFrom'][message_from][message_id]=''
+          # remove charactes from email source after the open parenthesis
+          sender = message_from.split("(")[0]
+          people[recipient]['ReceivedFrom'][sender][message_id]=''
           people[sender]['ReceivedFrom'][recipient][message_id]=''
 
-for person in people:
-  print person,' ', len(person)
 
-for messageid in messages:
-  print messageid
-  print messages[messageid]
+
+
+# sort the people dictionary by key
+sorted(people, key=people.get)
+
+for personid in people:
+  print "Person ",personid
+  print people[personid]
+
+print "Number of messages ",len(messages)
+print "Number of people ",len(people)
 
