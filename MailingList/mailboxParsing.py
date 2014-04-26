@@ -7,6 +7,27 @@ mbox = mailbox.mbox('/home/ibanez/data/ITK/Community/MailingList/python/ITKUsers
 people = {}
 messages = {}
 
+def regularizeEmail( inputemail ):
+   simplifiedemail = message_from.split("(")[0].lower()
+
+   basename = ''
+   domain = ''
+
+   if ' at ' in simplifiedemail:
+     basename = simplifiedemail.split(' at ')[0]
+     domain = simplifiedemail.split(' at ')[1]
+
+   if '@' in simplifiedemail:
+     basename = simplifiedemail.split('@')[0]
+     domain = simplifiedemail.split('@')[1]
+
+   basename.strip()
+   domain.strip()
+
+   recomposedemail = basename+'@'+domain
+
+   return recomposedemail
+
 for message in mbox:
   message_id = message['Message-Id']
   message_from = message['From']
@@ -18,7 +39,7 @@ for message in mbox:
 
     if message_from:
       # remove charactes from email source after the open parenthesis
-      sender = message_from.split("(")[0].lower()
+      sender = regularizeEmail(message_from)
 
       messages[message_id]['From']={}
       messages[message_id]['From'][sender]={}
@@ -68,7 +89,7 @@ for message in mbox:
           person['Received'][message_id]={}
 
           # remove charactes from email source after the open parenthesis
-          sender = message_from.split("(")[0].lower()
+          sender = regularizeEmail(message_from)
 
           if 'ReceivedFrom' not in person:
             person['ReceivedFrom']={}
