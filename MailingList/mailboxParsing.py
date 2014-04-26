@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import mailbox
 
 mbox = mailbox.mbox('/home/ibanez/data/ITK/Community/MailingList/python/ITKUsers.txt')
@@ -55,4 +57,8 @@ for message in mbox:
 
 for person in people:
   print person,' ', len(person)
+
+for messageid in messages:
+  print messageid
+  print messages[messageid]
 
