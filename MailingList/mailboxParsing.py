@@ -21,19 +21,21 @@ for message in mbox:
       sender = message_from.split("(")[0].lower()
 
       messages[message_id]['From']={}
-      messages[message_id]['From'][sender]=''
+      messages[message_id]['From'][sender]={}
 
-      people[sender]={}
-      people[sender]['Send']={}
-      people[sender]['Send'][message_id]=''
+      if sender not in people:
+        people[sender]={}
+        people[sender]['Send']={}
+
+      people[sender]['Send'][message_id]={}
 
     if message_date:
       messages[message_id]['Date']={}
-      messages[message_id]['Date'][message_date]=''
+      messages[message_id]['Date'][message_date]={}
 
     if message_reply:
       messages[message_id]['ReplyTo']={}
-      messages[message_id]['ReplyTo'][message_reply]=''
+      messages[message_id]['ReplyTo'][message_reply]={}
 
 for message in mbox:
   message_id = message['Message-Id']
@@ -48,16 +50,24 @@ for message in mbox:
         recipient = previous_message['From'].itervalues().next()
 
         if recipient:
-          messages[message_id]['To']={}
-          messages[message_id]['To'][recipient]=''
 
-          people[recipient]['Received']={}
-          people[recipient]['Received'][message_id]=''
+          current_message = messages[message_id]
+          if 'To' not in current_message:
+            current_message['To']={}
+
+          current_message['To'][recipient]={}
+
+          person = people[recipient]
+
+          if 'Received' not in person:
+            person['Received']={}
+
+          person['Received'][message_id]={}
 
           # remove charactes from email source after the open parenthesis
           sender = message_from.split("(")[0].lower()
-          people[recipient]['ReceivedFrom'][sender][message_id]=''
-          people[sender]['ReceivedFrom'][recipient][message_id]=''
+          people[recipient]['ReceivedFrom'][sender][message_id]={}
+          people[sender]['ReceivedFrom'][recipient][message_id]={}
 
 
 
@@ -72,7 +82,7 @@ for personid in people:
     sent = person['Send']
     number_of_emails_sent = len(sent)
     number_of_emails_received = 0
-    if 'Received' in person:
+    if 'Received' in people[personid]:
       received = person['Received']
       number_of_emails_received = len(received)
     print personid,' ',number_of_emails_sent,' ',number_of_emails_received
