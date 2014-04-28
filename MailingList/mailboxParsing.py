@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import mailbox
+import email.utils
+from datetime import datetime
+from dateutil.parser import parse
 
 mbox = mailbox.mbox('/home/ibanez/data/ITK/Community/MailingList/python/ITKUsers.txt')
 
@@ -51,8 +54,13 @@ for message in mbox:
       people[sender]['Send'][message_id]={}
 
     if message_date:
+
+      message_date = message_date.split("(")[0]
+
       messages[message_id]['Date']={}
       messages[message_id]['Date'][message_date]={}
+
+      message_datetime = parse(message_date)
 
     if message_reply:
       messages[message_id]['ReplyTo']={}
