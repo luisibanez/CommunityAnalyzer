@@ -31,6 +31,35 @@ def regularizeEmail( inputemail ):
 
    return recomposedemail
 
+# list of people with number of emails sents and received
+def listNumberOfEmailsSentAndReceived(people):
+
+ for personid in people:
+   person = people[personid]
+   if person:
+     sent = person['Send']
+     number_of_emails_sent = len(sent)
+     number_of_emails_received = 0
+     if 'Received' in people[personid]:
+       received = person['Received']
+       number_of_emails_received = len(received)
+     print personid,',',number_of_emails_sent,',',number_of_emails_received
+
+
+def countNumberOfReplyMessages(messages):
+  replyCount = 0
+  messagesCount = 0
+  for msg in messages:
+    messagesCount += 1
+    if 'ReplyTo' in messages[msg]:
+      replyCount += 1
+
+  print "Number of messages ",len(messages)
+  print "Number of replies ",replyCount
+  print "Number of messages ",messagesCount
+
+
+
 for message in mbox:
   message_id = message['Message-Id']
   message_from = message['From']
@@ -115,20 +144,7 @@ for message in mbox:
 # sort the people dictionary by key
 sorted(people, key=people.get)
 
-# list of people with number of emails sents and received
-for personid in people:
-  person = people[personid]
-  if person:
-    sent = person['Send']
-    number_of_emails_sent = len(sent)
-    number_of_emails_received = 0
-    if 'Received' in people[personid]:
-      received = person['Received']
-      number_of_emails_received = len(received)
-    print personid,' ',number_of_emails_sent,' ',number_of_emails_received
+listNumberOfEmailsSentAndReceived(people)
 
-
-
-print "Number of messages ",len(messages)
-print "Number of people ",len(people)
+countNumberOfReplyMessages(messages)
 
