@@ -60,6 +60,17 @@ def countNumberOfReplyMessages(messages):
   print "Number of messages ",messagesCount
 
 
+def forwardLinkMessages(messages):
+  for messageid in messages:
+    if 'ReplyTo' in messages[messageid]:
+      messageitr = messages[messageid]['ReplyTo'].iterkeys().next()
+      if messageitr in messages:
+        if not 'FollowedBy' in messages[messageitr]:
+          messages[messageitr]['FollowedBy']={}
+        messages[messageitr]['FollowedBy'][messageid]={}
+
+
+
 def addNewThread(messageid,messages,messagesinthread,threads):
   if not messageid in threads:
     threads[messageid]={}
@@ -82,24 +93,16 @@ def composeThreads(messages,threads):
       if not 'Thread' in messages[messageid]:
         messages[messageid]['Thread']={}
       messages[messageid]['Thread'][messageid]={}
-    else:
-      messageitr = messageid
-      messagesinthread={}
-      isReply = False
-      if 'ReplyTo' in messages[messageitr]:
-        isReply = True
-      while isReply:
-        if not 'Thread' in messages[messageitr]:
-          messages[messageitr]['Thread']={}
-        messages[messageitr]['Thread'][messageid]={}
-        isReply = False
-        messageitr2 = messages[messageitr]['ReplyTo'].iterkeys().next()
-        if messageitr2 in messages:
-          if 'ReplyTo' in messages[messageitr2]:
-            isReply = True
-          messageitr = messageitr2
-      addNewThread(messageitr,messages,messagesinthread,threads)
 
+      if 'FollowedBy' in messages[messageid]:
+        for nextmsgid in messages[messageid]['FollowedBy']:
+          threads[messageid]['Messages'][nextmsgid]={}
+
+
+def reportThreads(messages,threads):
+  print 'total ',len(threads),' threads'
+  for thr in threads:
+    print thr, len(threads[thr]['Messages'])
 
 
 for message in mbox:
@@ -190,5 +193,9 @@ sorted(people, key=people.get)
 
 # countNumberOfReplyMessages(messages)
 
+forwardLinkMessages(messages)
+
 composeThreads(messages,threads)
+
+reportThreads(messages,threads)
 
