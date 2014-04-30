@@ -9,6 +9,7 @@ mbox = mailbox.mbox('/home/ibanez/data/ITK/Community/MailingList/python/ITKUsers
 
 people = {}
 messages = {}
+threads = {}
 
 def regularizeEmail( inputemail ):
    simplifiedemail = message_from.split("(")[0].lower()
@@ -57,6 +58,47 @@ def countNumberOfReplyMessages(messages):
   print "Number of messages ",len(messages)
   print "Number of replies ",replyCount
   print "Number of messages ",messagesCount
+
+
+def addNewThread(messageid,messages,messagesinthread,threads):
+  if not messageid in threads:
+    threads[messageid]={}
+    threads[messageid]['Messages']={}
+  for messageitr in messagesinthread:
+    if not messageitr in threads[messageid]['Messages']:
+      threads[messageid]['Messages'][messageitr]={}
+    if not 'Thread' in messages[messageitr]:
+      messages[messageitr]['Thread']={}
+      if not messageid in messages[messageitr]['Thread']:
+        messages[messageitr]['Thread'][messageid]={}
+
+
+def composeThreads(messages,threads):
+  for messageid in messages:
+    if not 'ReplyTo' in messages[messageid]:
+      threads[messageid]={}
+      threads[messageid]['Messages']={}
+      threads[messageid]['Messages'][messageid]={}
+      if not 'Thread' in messages[messageid]:
+        messages[messageid]['Thread']={}
+      messages[messageid]['Thread'][messageid]={}
+    else:
+      messageitr = messageid
+      messagesinthread={}
+      isReply = False
+      if 'ReplyTo' in messages[messageitr]:
+        isReply = True
+      while isReply:
+        if not 'Thread' in messages[messageitr]:
+          messages[messageitr]['Thread']={}
+        messages[messageitr]['Thread'][messageid]={}
+        isReply = False
+        messageitr2 = messages[messageitr]['ReplyTo'].iterkeys().next()
+        if messageitr2 in messages:
+          if 'ReplyTo' in messages[messageitr2]:
+            isReply = True
+          messageitr = messageitr2
+      addNewThread(messageitr,messages,messagesinthread,threads)
 
 
 
@@ -144,7 +186,9 @@ for message in mbox:
 # sort the people dictionary by key
 sorted(people, key=people.get)
 
-listNumberOfEmailsSentAndReceived(people)
+# listNumberOfEmailsSentAndReceived(people)
 
-countNumberOfReplyMessages(messages)
+# countNumberOfReplyMessages(messages)
+
+composeThreads(messages,threads)
 
