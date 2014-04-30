@@ -70,20 +70,6 @@ def forwardLinkMessages(messages):
         messages[messageitr]['FollowedBy'][messageid]={}
 
 
-
-def addNewThread(messageid,messages,messagesinthread,threads):
-  if not messageid in threads:
-    threads[messageid]={}
-    threads[messageid]['Messages']={}
-  for messageitr in messagesinthread:
-    if not messageitr in threads[messageid]['Messages']:
-      threads[messageid]['Messages'][messageitr]={}
-    if not 'Thread' in messages[messageitr]:
-      messages[messageitr]['Thread']={}
-      if not messageid in messages[messageitr]['Thread']:
-        messages[messageitr]['Thread'][messageid]={}
-
-
 def composeThreads(messages,threads):
   for messageid in messages:
     if not 'ReplyTo' in messages[messageid]:
@@ -103,6 +89,19 @@ def reportThreads(messages,threads):
   print 'total ',len(threads),' threads'
   for thr in threads:
     print thr, len(threads[thr]['Messages'])
+
+
+def threadsSizeHistogram(threads):
+  histogram={}
+  for threadid in threads:
+    size = len(threads[threadid]['Messages'])
+    if size in histogram:
+      histogram[size] += 1
+    else:
+      histogram[size] = 1
+
+  for binplace in histogram:
+    print binplace,' = ',histogram[binplace]
 
 
 for message in mbox:
@@ -197,5 +196,7 @@ forwardLinkMessages(messages)
 
 composeThreads(messages,threads)
 
-reportThreads(messages,threads)
+# reportThreads(messages,threads)
+
+threadsSizeHistogram(threads)
 
