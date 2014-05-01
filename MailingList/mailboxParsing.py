@@ -64,31 +64,42 @@ def forwardLinkMessages(messages):
   for messageid in messages:
     if 'ReplyTo' in messages[messageid]:
       messageitr = messages[messageid]['ReplyTo'].iterkeys().next()
+      # print messageid,' ReplyTo ',messageitr
       if messageitr in messages:
         if not 'FollowedBy' in messages[messageitr]:
           messages[messageitr]['FollowedBy']={}
         messages[messageitr]['FollowedBy'][messageid]={}
+        # print messageitr,' FollowedBy ',messageid
 
 
 def composeThreads(messages,threads):
   for messageid in messages:
     if not 'ReplyTo' in messages[messageid]:
-      threads[messageid]={}
-      threads[messageid]['Messages']={}
-      threads[messageid]['Messages'][messageid]={}
-      if not 'Thread' in messages[messageid]:
-        messages[messageid]['Thread']={}
-      messages[messageid]['Thread'][messageid]={}
+      if not messageid in threads:
+        threads[messageid]={}
+        threads[messageid]['Messages']={}
+        threads[messageid]['Messages'][messageid]={}
+        if not 'Thread' in messages[messageid]:
+          messages[messageid]['Thread']={}
+        messages[messageid]['Thread'][messageid]={}
 
-      if 'FollowedBy' in messages[messageid]:
-        for nextmsgid in messages[messageid]['FollowedBy']:
-          threads[messageid]['Messages'][nextmsgid]={}
+        notEndOfThread = True
+
+        currentmessageid = messageid
+        while notEndOfThread:
+          if 'FollowedBy' in messages[currentmessageid]:
+            notEndOfThread = True
+            nextmessageid = messages[currentmessageid]['FollowedBy'].iterkeys().next()
+            threads[messageid]['Messages'][nextmessageid]={}
+            currentmessageid = nextmessageid
+          else:
+            notEndOfThread = False
 
 
 def reportThreads(messages,threads):
-  print 'total ',len(threads),' threads'
   for thr in threads:
     print thr, len(threads[thr]['Messages'])
+  print 'total ',len(threads),' threads'
 
 
 def threadsSizeHistogram(threads):
@@ -100,8 +111,16 @@ def threadsSizeHistogram(threads):
     else:
       histogram[size] = 1
 
+  totalMessages = 0
+  totalThreads = 0
+
   for binplace in histogram:
     print binplace,' = ',histogram[binplace]
+    totalThreads += histogram[binplace]
+    totalMessages += histogram[binplace] * binplace
+
+  print 'Total threads = ',totalThreads
+  print 'Total messages = ',totalMessages
 
 
 for message in mbox:
@@ -188,15 +207,16 @@ for message in mbox:
 # sort the people dictionary by key
 sorted(people, key=people.get)
 
-# listNumberOfEmailsSentAndReceived(people)
+listNumberOfEmailsSentAndReceived(people)
 
-# countNumberOfReplyMessages(messages)
+countNumberOfReplyMessages(messages)
 
 forwardLinkMessages(messages)
 
 composeThreads(messages,threads)
 
-# reportThreads(messages,threads)
+reportThreads(messages,threads)
 
 threadsSizeHistogram(threads)
 
+print 'People = ',len(people)
