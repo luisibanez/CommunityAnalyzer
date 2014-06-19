@@ -3,6 +3,7 @@ import bson.json_util
 import dateutil.parser
 import os
 import sys
+import types
 
 def parse_email(text):
     # Split into lines, and look for a blank line - this separates headers from
@@ -36,9 +37,11 @@ def parse_email(text):
 
     # Convert the date fields to datetime objects.
     if "(" in headers["Date"]:
-        headers["Date"] = " ".join(headers["Date"].split()[:-1])
-    headers["Date"] = dateutil.parser.parse(headers["Date"])
-    #headers["NNTP-Posting-Date"] = dateutil.parser.parse(headers["NNTP-Posting-Date"])
+        headers["Date"] = headers["Date"].split("(")[0]
+    try:
+        headers["Date"] = dateutil.parser.parse(headers["Date"])
+    except Exception as e:
+        return "%s: %s" % (e.__class__.__name__, str(e))
 
     # Attach the email body to the record.
     headers["Body"] = body
@@ -54,7 +57,7 @@ def stream_mbox(filename):
         # (note the trailing space).
         line = f.readline()
         if not is_mbox_header(line):
-            raise ValueError("'%s' does not appear to be an mbox file")
+            raise ValueError("'%s' does not appear to be an mbox file" % (filename))
 
         # Read lines into a buffer until the mbox separator appears.
         #
@@ -89,8 +92,11 @@ def main2():
     args = ap.parse_args()
 
     bad = []
+    total_count = 0
     for filename in args.files:
         if args.verbose:
+            bad_count = 0
+            batch_count = 0
             sys.stderr.write("processing file '%s'%s" % (filename, "..." if args.progress == 0 else ""))
             sys.stderr.flush()
 
@@ -98,7 +104,17 @@ def main2():
         failure = False
         for i, email in enumerate(mbox):
             try:
-                print bson.json_util.dumps(parse_email(email))
+                parsed = parse_email(email)
+                if type(parsed) in types.StringTypes:
+                    if args.verbose:
+                        failure = True
+
+                    bad.append({"file": filename,
+                                "number": i + 1,
+                                "message": parsed})
+                    bad_count += 1
+                else:
+                    print bson.json_util.dumps(parsed)
             except UnicodeDecodeError as e:
                 if args.verbose:
                     failure = True
@@ -106,13 +122,17 @@ def main2():
                 bad.append({"file": filename,
                             "number": i + 1,
                             "message": "UnicodeDecodeError: %s" % (str(e))})
+                bad_count += 1
+
+            batch_count += 1
+            total_count += 1
 
             if args.verbose and args.progress > 0 and i % args.progress == 0:
                 sys.stderr.write("*" if failure else ".")
                 failure = False
 
         if args.verbose:
-            print >>sys.stderr, "ok"
+            print >>sys.stderr, "ok (%d of %d skipped this batch, %d of %d skipped total)" % (bad_count, batch_count, len(bad), total_count)
 
     if len(bad) > 0:
         print >>sys.stderr, "%d email%s %s skipped due to errors:" % (len(bad), "s" if len(bad) > 1 else "", "were" if len(bad) > 1 else "was")
