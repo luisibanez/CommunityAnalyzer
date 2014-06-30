@@ -16,38 +16,33 @@
  *
  *=========================================================================*/
 
-#ifndef __Commit_h
-#define __Commit_h
+#ifndef __GitNetwork_h
+#define __GitNetwork_h
 
 #include <string>
-#include <unordered_map>
 
-#include "Date.h"
-#include "Person.h"
-#include "FileChange.h"
+#include "CommitsContainer.h"
+#include "PeopleContainer.h"
+#include "FilesContainer.h"
 
 namespace GitStatistics
 {
 
-class Commit
+class GitNetwork
 {
 public:
-  Commit();
-  ~Commit();
+  GitNetwork();
+  ~GitNetwork();
 
-  const std::string & GetHash() const;
+  void AddCommit( const Commit & commit );
 
-  void SetHash( const std::string & hashvalue );
+  void ParseInputFile(const char * inputFileName);
 
 private:
 
-  typedef std::unordered_map< std::string, FileChange >  FileChangesContainer;
-
-  std::string           hash;
-  Date                  date;
-  Person                author;
-  Person                committer;
-  FileChangesContainer  fileChanges;
+  CommitsContainer   commits;
+  PeopleContainer    people;
+  FilesContainer     files;
 
 };
 

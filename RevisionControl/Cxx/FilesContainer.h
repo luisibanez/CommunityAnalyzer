@@ -16,38 +16,27 @@
  *
  *=========================================================================*/
 
-#ifndef __Commit_h
-#define __Commit_h
+#ifndef __FilesContainer_h
+#define __FilesContainer_h
 
 #include <string>
-#include <unordered_map>
 
-#include "Date.h"
-#include "Person.h"
-#include "FileChange.h"
+#include "File.h"
 
 namespace GitStatistics
 {
 
-class Commit
+class FilesContainer
 {
 public:
-  Commit();
-  ~Commit();
-
-  const std::string & GetHash() const;
-
-  void SetHash( const std::string & hashvalue );
+  FilesContainer() {}
+  ~FilesContainer() {}
 
 private:
 
-  typedef std::unordered_map< std::string, FileChange >  FileChangesContainer;
+  typedef std::unordered_map< std::string, File >  ContainerType;
 
-  std::string           hash;
-  Date                  date;
-  Person                author;
-  Person                committer;
-  FileChangesContainer  fileChanges;
+  ContainerType     container;
 
 };
 

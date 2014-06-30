@@ -16,14 +16,16 @@
  *
  *=========================================================================*/
 
-#include "CommitsContainer.h"
+#include "GitNetwork.h"
 
 using namespace GitStatistics;
 
-int main()
+int main( int argc, char * argv [] )
 {
 
-  CommitsContainer  commits;
+  GitNetwork  network;
+
+  network.ParseInputFile( argv[1] );
 
   return 0;
 }

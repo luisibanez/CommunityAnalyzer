@@ -29,8 +29,10 @@ namespace GitStatistics
 class CommitsContainer
 {
 public:
-  CommitsContainer() {}
-  ~CommitsContainer() {}
+  CommitsContainer();
+  ~CommitsContainer();
+
+  void Add( const Commit & commit );
 
 private:
 

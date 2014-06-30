@@ -16,41 +16,48 @@
  *
  *=========================================================================*/
 
-#ifndef __Commit_h
-#define __Commit_h
+#include "GitNetwork.h"
 
-#include <string>
-#include <unordered_map>
-
-#include "Date.h"
-#include "Person.h"
-#include "FileChange.h"
+#include <fstream>
+#include <iostream>
 
 namespace GitStatistics
 {
 
-class Commit
+GitNetwork::GitNetwork()
 {
-public:
-  Commit();
-  ~Commit();
-
-  const std::string & GetHash() const;
-
-  void SetHash( const std::string & hashvalue );
-
-private:
-
-  typedef std::unordered_map< std::string, FileChange >  FileChangesContainer;
-
-  std::string           hash;
-  Date                  date;
-  Person                author;
-  Person                committer;
-  FileChangesContainer  fileChanges;
-
-};
-
 }
 
-#endif
+GitNetwork::~GitNetwork()
+{
+}
+
+void GitNetwork::AddCommit( const Commit & commit )
+{
+  this->commits.Add( commit );
+}
+
+void GitNetwork::ParseInputFile( const char * inputFileName )
+{
+  std::ifstream inputFile;
+
+  inputFile.open(inputFileName);
+
+  std::string inputLine;
+
+  while( !inputFile.eof() )
+    {
+    std::getline( inputFile, inputLine );
+
+    if( inputLine.find("Commit:") != std::string::npos )
+      {
+      Commit commit;
+      std::string hash = inputLine.substr(8,std::string::npos);
+      std::cout << "hash = " << hash << std::endl;
+      commit.SetHash( hash );
+      }
+
+    }
+}
+
+}
