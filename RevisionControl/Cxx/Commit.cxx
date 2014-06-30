@@ -53,6 +53,11 @@ void Commit::SetAuthor( const std::string & authorname )
   this->author.SetName( authorname );
 }
 
+void Commit::SetCommitter( const std::string & committername )
+{
+  this->committer.SetName( committername );
+}
+
 void Commit::SetDate( const std::string & datestring )
 {
   this->date.Set( datestring );

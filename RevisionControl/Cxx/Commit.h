@@ -43,6 +43,8 @@ public:
 
   void SetAuthor( const std::string & authorname );
 
+  void SetCommitter( const std::string & committername );
+
   void SetDate( const std::string & datestring );
 
 private:

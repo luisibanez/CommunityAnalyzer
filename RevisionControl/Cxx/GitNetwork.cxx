@@ -49,6 +49,10 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
     {
     std::getline( inputFile, inputLine );
 
+    //
+    // This parsing approach presumes a specific order of the tags.
+    // It makes the parsing more efficient, but also more vulnerable.
+    //
     if( inputLine.find("Commit:") != std::string::npos )
       {
       Commit commit;
@@ -59,9 +63,9 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
       std::getline( inputFile, inputLine );
       if( inputLine.find("Author:") != std::string::npos )
         {
-        std::string personName = inputLine.substr(8,std::string::npos);
-        std::cout << "author = " << personName << std::endl;
-        commit.SetAuthor( personName );
+        std::string authorName = inputLine.substr(8,std::string::npos);
+        std::cout << "author = " << authorName << std::endl;
+        commit.SetAuthor( authorName );
 
         std::getline( inputFile, inputLine );
         if( inputLine.find("Date:") != std::string::npos )
@@ -69,6 +73,14 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
           std::string dateString = inputLine.substr(6,std::string::npos);
           std::cout << "date = " << dateString << std::endl;
           commit.SetDate( dateString );
+
+          std::getline( inputFile, inputLine );
+          if( inputLine.find("Committer:") != std::string::npos )
+            {
+            std::string committerName = inputLine.substr(11,std::string::npos);
+            std::cout << "committer = " << committerName << std::endl;
+            commit.SetCommitter( committerName );
+            }
           }
         }
 
