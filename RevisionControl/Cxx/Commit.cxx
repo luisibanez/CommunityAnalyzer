@@ -69,7 +69,7 @@ void Commit::AddFileChange( const std::string & filechangestring )
 {
   FileChange change;
 
-  std::stringstream inputStream( filechangestring );
+  std::istringstream inputStream( filechangestring );
 
   unsigned int numberOfLinesAdded;
   unsigned int numberOfLinesRemoved;
