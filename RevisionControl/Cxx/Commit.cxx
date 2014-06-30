@@ -29,6 +29,15 @@ Commit::~Commit()
 {
 }
 
+Commit::Commit( const Commit & other )
+{
+  this->hash = other.hash;
+  this->date = other.date;
+  this->author = other.author;
+  this->committer = other.committer;
+  this->fileChanges = other.fileChanges;
+}
+
 const std::string & Commit::GetHash() const
 {
   return this->hash;
@@ -37,6 +46,16 @@ const std::string & Commit::GetHash() const
 void Commit::SetHash( const std::string & hashvalue )
 {
   this->hash = hashvalue;
+}
+
+void Commit::SetAuthor( const std::string & authorname )
+{
+  this->author.SetName( authorname );
+}
+
+void Commit::SetDate( const std::string & datestring )
+{
+  this->date.Set( datestring );
 }
 
 }

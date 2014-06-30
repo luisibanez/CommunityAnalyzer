@@ -27,8 +27,10 @@ namespace GitStatistics
 class Person
 {
 public:
-  Person() {}
-  ~Person() {}
+  Person();
+  ~Person();
+
+  void SetName( const std::string & namevalue );
 
 private:
 

@@ -19,14 +19,18 @@
 #ifndef __Date_h
 #define __Date_h
 
+#include <string>
+
 namespace GitStatistics
 {
 
 class Date
 {
 public:
-  Date() {}
-  ~Date() {}
+  Date();
+  ~Date();
+
+  void Set( const std::string & datestring );
 
 private:
 

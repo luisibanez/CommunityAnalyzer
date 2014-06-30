@@ -55,6 +55,23 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
       std::string hash = inputLine.substr(8,std::string::npos);
       std::cout << "hash = " << hash << std::endl;
       commit.SetHash( hash );
+
+      std::getline( inputFile, inputLine );
+      if( inputLine.find("Author:") != std::string::npos )
+        {
+        std::string personName = inputLine.substr(8,std::string::npos);
+        std::cout << "author = " << personName << std::endl;
+        commit.SetAuthor( personName );
+
+        std::getline( inputFile, inputLine );
+        if( inputLine.find("Date:") != std::string::npos )
+          {
+          std::string dateString = inputLine.substr(6,std::string::npos);
+          std::cout << "date = " << dateString << std::endl;
+          commit.SetDate( dateString );
+          }
+        }
+
       }
 
     }
