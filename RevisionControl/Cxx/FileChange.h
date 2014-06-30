@@ -19,19 +19,27 @@
 #ifndef __FileChange_h
 #define __FileChange_h
 
+#include <string>
+
 namespace GitStatistics
 {
 
 class FileChange
 {
 public:
-  FileChange() {}
-  ~FileChange() {}
+  FileChange();
+  ~FileChange();
+  FileChange(const FileChange & other);
+
+  void SetNumberOfLinesAdded(unsigned int);
+  void SetNumberOfLinesRemoved(unsigned int);
+  void SetFileName(const std::string & filename);
 
 private:
 
   unsigned int    numberOfLinesAdded;
   unsigned int    numberOfLinesRemoved;
+  std::string     fileName;
 
 };
 

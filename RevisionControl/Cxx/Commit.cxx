@@ -18,6 +18,8 @@
 
 #include "Commit.h"
 
+#include <sstream>
+
 namespace GitStatistics
 {
 
@@ -61,6 +63,27 @@ void Commit::SetCommitter( const std::string & committername )
 void Commit::SetDate( const std::string & datestring )
 {
   this->date.Set( datestring );
+}
+
+void Commit::AddFileChange( const std::string & filechangestring )
+{
+  FileChange change;
+
+  std::stringstream inputStream( filechangestring );
+
+  unsigned int numberOfLinesAdded;
+  unsigned int numberOfLinesRemoved;
+  std::string fileName;
+
+  inputStream >> numberOfLinesAdded;
+  inputStream >> numberOfLinesRemoved;
+  inputStream >> fileName;
+
+  change.SetNumberOfLinesAdded(numberOfLinesAdded);
+  change.SetNumberOfLinesRemoved(numberOfLinesRemoved);
+  change.SetFileName(fileName);
+
+  this->fileChanges[fileName] = change;
 }
 
 }

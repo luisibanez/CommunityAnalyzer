@@ -80,8 +80,39 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
             std::string committerName = inputLine.substr(11,std::string::npos);
             std::cout << "committer = " << committerName << std::endl;
             commit.SetCommitter( committerName );
+
+            // Now attempt to parse the changed files
+
+            // get an empty line out of the way
+            std::getline( inputFile, inputLine);
+            if( !inputLine.empty() )
+              {
+              std::cerr << "Were expecting an empty line after Committer:" << std::endl;
+              }
+
+            while(1)
+              {
+
+              std::getline( inputFile, inputLine);
+
+              if( inputLine.empty() )
+                {
+                // This must be the end of the list of files
+                break;
+                }
+              else
+                {
+                // This must be one of the changed files
+                std::cout << "File changed " << inputLine << std::endl;
+                commit.AddFileChange( inputLine );
+                }
+
+              }
+
             }
+
           }
+
         }
 
       }
