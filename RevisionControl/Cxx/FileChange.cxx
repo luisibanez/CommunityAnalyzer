@@ -16,51 +16,44 @@
  *
  *=========================================================================*/
 
-#ifndef __Commit_h
-#define __Commit_h
-
-#include <string>
-#include <unordered_map>
-
-#include "Date.h"
-#include "Person.h"
 #include "FileChange.h"
 
 namespace GitStatistics
 {
 
-class Commit
+FileChange::FileChange()
 {
-public:
-  Commit();
-  ~Commit();
-
-  Commit( const Commit & otherCommit );
-
-  const std::string & GetHash() const;
-
-  void SetHash( const std::string & hashvalue );
-
-  void SetAuthor( const std::string & authorname );
-
-  void SetCommitter( const std::string & committername );
-
-  void SetDate( const std::string & datestring );
-
-  void AddFileChange( const std::string & filechangestring );
-
-private:
-
-  typedef std::unordered_map< std::string, FileChange >  FileChangesContainer;
-
-  std::string           hash;
-  Date                  date;
-  Person                author;
-  Person                committer;
-  FileChangesContainer  fileChanges;
-
-};
-
+  this->numberOfLinesAdded = 0;
+  this->numberOfLinesRemoved = 0;
 }
 
-#endif
+FileChange::~FileChange()
+{
+}
+
+FileChange::FileChange( const FileChange & other )
+{
+  this->numberOfLinesAdded = other.numberOfLinesAdded;
+  this->numberOfLinesRemoved = other.numberOfLinesRemoved;
+  this->fileName = other.fileName;
+}
+
+void
+FileChange::SetNumberOfLinesAdded(unsigned int numberOfLines)
+{
+  this->numberOfLinesAdded = numberOfLines;
+}
+
+void
+FileChange::SetNumberOfLinesRemoved(unsigned int numberOfLines)
+{
+  this->numberOfLinesRemoved = numberOfLines;
+}
+
+void
+FileChange::SetFileName(const std::string & filename)
+{
+  this->fileName = filename;
+}
+
+}

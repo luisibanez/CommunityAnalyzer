@@ -16,33 +16,24 @@
  *
  *=========================================================================*/
 
-#ifndef __FileChange_h
-#define __FileChange_h
-
-#include <string>
+#include "CommitsContainer.h"
 
 namespace GitStatistics
 {
 
-class FileChange
+CommitsContainer::CommitsContainer()
 {
-public:
-  FileChange();
-  ~FileChange();
-  FileChange(const FileChange & other);
-
-  void SetNumberOfLinesAdded(unsigned int);
-  void SetNumberOfLinesRemoved(unsigned int);
-  void SetFileName(const std::string & filename);
-
-private:
-
-  unsigned int    numberOfLinesAdded;
-  unsigned int    numberOfLinesRemoved;
-  std::string     fileName;
-
-};
-
 }
 
-#endif
+CommitsContainer::~CommitsContainer()
+{
+}
+
+
+void
+CommitsContainer::Add( const Commit & commit )
+{
+  this->container[commit.GetHash()] = commit;
+}
+
+}

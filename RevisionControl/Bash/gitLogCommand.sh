@@ -15,7 +15,7 @@
 git log \
   --numstat \
   --no-merges \
-  --pretty="%nCommit: %H%nAuthor: %aN%nDate: %aD%nCommitter: %cN%n" \
+  --pretty="%nCommit: %H%nAuthor: %aN%nDate: %aD%nCommitter: %cN" \
   >  /tmp/CommunityAnalyzerGitLog.txt
 
 
