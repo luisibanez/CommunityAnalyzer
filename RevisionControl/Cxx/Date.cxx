@@ -18,6 +18,9 @@
 
 #include "Date.h"
 
+#include <ctime>
+#include <iostream>
+
 namespace GitStatistics
 {
 
@@ -32,6 +35,19 @@ Date::~Date()
 void
 Date::Set( const std::string & datestring )
 {
+  std::tm tm;
+  strptime( datestring.c_str(),"%a, %d %b %Y %H:%M:%S %Z", &tm);
+  this->timePoint = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+
+  // quick verification
+  std::time_t tt = std::chrono::system_clock::to_time_t( this->timePoint );
+  std::string timeString = ctime(&tt);
+
+  std::cout << "Input Time = " << datestring << std::endl;
+  std::cout << "Parse Time = " << timeString << std::endl;
+
+  // Note: Time zone is note being taken into account correctly.
+  // Must investigate this further.
 }
 
 }
