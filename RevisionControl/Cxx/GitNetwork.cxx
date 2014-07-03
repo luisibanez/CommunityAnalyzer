@@ -66,6 +66,9 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
         std::string authorName = inputLine.substr(8,std::string::npos);
         std::cout << "author = " << authorName << std::endl;
         commit.SetAuthor( authorName );
+        Person author;
+        author.SetName( authorName );
+        people.AddPerson( author );
 
         std::getline( inputFile, inputLine );
         if( inputLine.find("Date:") != std::string::npos )
@@ -114,10 +117,16 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
           }
 
         }
-
+      this->AddCommit( commit );
       }
 
     }
+}
+
+void GitNetwork::ListPeople() const
+{
+  std::cout << "List of People" << std::endl;
+  this->people.List();
 }
 
 }

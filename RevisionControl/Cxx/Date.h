@@ -20,6 +20,8 @@
 #define __Date_h
 
 #include <string>
+#include <chrono>
+
 
 namespace GitStatistics
 {
@@ -34,6 +36,8 @@ public:
 
 private:
 
+  typedef std::chrono::time_point< std::chrono::system_clock > TimePointType;
+  TimePointType   timePoint;
 
 };
 

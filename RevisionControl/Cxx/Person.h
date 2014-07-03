@@ -32,6 +32,8 @@ public:
 
   void SetName( const std::string & namevalue );
 
+  const std::string & GetName() const;
+
 private:
 
   std::string     name;

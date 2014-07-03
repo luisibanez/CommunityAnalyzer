@@ -8,4 +8,5 @@ ADD_EXECUTABLE(GitStatisticsAnalyzer
   FileChange.cxx
   GitStatisticsParser.cxx
   Person.cxx
+  PeopleContainer.cxx
   )
