@@ -14,8 +14,15 @@ i = 0
 batch = 1000
 docs = []
 for d in in_coll.find():
-    d['creation_time'] = dateutil.parser.parse(d['creation_time'])
-    d['last_change_time'] = dateutil.parser.parse(d['last_change_time'])
+    if isinstance(d['creation_time'], (str, unicode)):
+        d['creation_time'] = dateutil.parser.parse(d['creation_time'])
+    if isinstance(d['last_change_time'], (str, unicode)):
+        d['last_change_time'] = dateutil.parser.parse(d['last_change_time'])
+    if 'history' in d:
+        for h in d['history']:
+            if isinstance(h['when'], (str, unicode)):
+                h['when'] = dateutil.parser.parse(h['when'])
+
     docs.append(d)
     i += 1
     if i % batch == 0:

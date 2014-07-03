@@ -3,6 +3,7 @@ import sys
 import pymongo
 import json
 import time
+import dateutil.parser
 
 base_url = sys.argv[1]
 host = sys.argv[2]
@@ -21,5 +22,8 @@ for d in in_coll.find(sort=[('creation_time', pymongo.DESCENDING)], timeout=Fals
     content = requests.get(url + str(d['id']) + '/history').content
     loaded = json.loads(content)
     d['history'] = loaded['bugs'][0]['history']
+    for h in d['history']:
+        if isinstance(h['when'], (str, unicode)):
+            h['when'] = dateutil.parser.parse(h['when'])
     out_coll.insert(d)
     time.sleep(1)

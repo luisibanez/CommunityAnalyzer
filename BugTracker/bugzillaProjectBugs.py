@@ -3,6 +3,7 @@ import sys
 import json
 import time
 import pymongo
+import dateutil
 
 base_url = sys.argv[1]
 project = sys.argv[2]
@@ -22,8 +23,12 @@ while done == False:
     content = requests.get(url + '&limit=' + str(batch) + '&offset=' + str(offset)).content
     loaded = json.loads(content)
     if len(loaded["bugs"]) > 0:
+        for d in loaded["bugs"]:
+            if isinstance(d['creation_time'], (str, unicode)):
+                d['creation_time'] = dateutil.parser.parse(d['creation_time'])
+            if isinstance(d['last_change_time'], (str, unicode)):
+                d['last_change_time'] = dateutil.parser.parse(d['last_change_time'])
         coll.insert(loaded["bugs"])
-        # json.dump(loaded["bugs"], open(('%06d' % offset) + '-' + output_file, 'w'), indent=2)
     else:
         done = True
     offset += batch

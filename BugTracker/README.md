@@ -19,3 +19,8 @@ Extract history data one bug at a time
 ```
 python bugzillaHistory.py https://bugzilla.mozilla.org localhost community firefox.bugs.datefix firefox.bugs.history
 ```
+
+Compute monthly metrics
+```
+python bugzillaMonthlyMetrics.py localhost community firefox.bugs.history > firefoxMonthly.csv
+```
