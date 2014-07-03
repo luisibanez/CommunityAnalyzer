@@ -20,6 +20,7 @@
 #define __PeopleContainer_h
 
 #include <string>
+#include <unordered_map>
 
 #include "Person.h"
 
@@ -29,8 +30,12 @@ namespace GitStatistics
 class PeopleContainer
 {
 public:
-  PeopleContainer() {}
-  ~PeopleContainer() {}
+  PeopleContainer();
+  ~PeopleContainer();
+
+  void AddPerson( const Person & newperson );
+
+  void List() const;
 
 private:
 

@@ -16,18 +16,34 @@
  *
  *=========================================================================*/
 
-#include "GitNetwork.h"
+#include "PeopleContainer.h"
 
-using namespace GitStatistics;
+#include <iostream>
 
-int main( int argc, char * argv [] )
+namespace GitStatistics
 {
 
-  GitNetwork  network;
+PeopleContainer::PeopleContainer()
+{
+}
 
-  network.ParseInputFile( argv[1] );
+PeopleContainer::~PeopleContainer()
+{
+}
 
-  network.ListPeople();
+void
+PeopleContainer::AddPerson( const Person & newperson )
+{
+  this->container[newperson.GetName()]=newperson;
+}
 
-  return 0;
+void
+PeopleContainer::List() const
+{
+  for(const auto & person : this->container )
+    {
+    std::cout << person.second.GetName() << std::endl;
+    }
+}
+
 }

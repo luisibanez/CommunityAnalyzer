@@ -38,6 +38,8 @@ public:
 
   void ParseInputFile(const char * inputFileName);
 
+  void ListPeople() const;
+
 private:
 
   CommitsContainer   commits;

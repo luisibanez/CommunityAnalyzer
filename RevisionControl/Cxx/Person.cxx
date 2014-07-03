@@ -34,5 +34,10 @@ void Person::SetName( const std::string & namevalue )
   this->name = namevalue;
 }
 
+const std::string & Person::GetName() const
+{
+  return this->name;
+}
+
 }
 
