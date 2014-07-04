@@ -34,6 +34,8 @@ public:
 
   void Add( const Commit & commit );
 
+  void Print( std::ostream & outputStream ) const;
+
 private:
 
   typedef std::unordered_map< std::string, Commit >  ContainerType;

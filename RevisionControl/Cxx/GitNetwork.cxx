@@ -126,8 +126,6 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 
         }
       this->AddCommit( commit );
-      commit.Print( std::cout );
-      std::cout << std::endl;
       }
 
     }
@@ -141,6 +139,11 @@ void GitNetwork::ListPeople() const
 void GitNetwork::ListFiles() const
 {
   this->files.Print( std::cout );
+}
+
+void GitNetwork::ListCommits() const
+{
+  this->commits.Print( std::cout );
 }
 
 }

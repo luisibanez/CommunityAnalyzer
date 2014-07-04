@@ -36,4 +36,19 @@ CommitsContainer::Add( const Commit & commit )
   this->container[commit.GetHash()] = commit;
 }
 
+void
+CommitsContainer::Print( std::ostream & outputStream ) const
+{
+  outputStream << "List of Commits" << std::endl;
+  outputStream << this->container.size() << " entries" << std::endl;
+  outputStream << std::endl;
+
+  for(const auto & entry : this->container )
+    {
+    entry.second.Print( outputStream );
+    outputStream << std::endl;
+    }
+
+}
+
 }

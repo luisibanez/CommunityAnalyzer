@@ -29,6 +29,7 @@ int main( int argc, char * argv [] )
 
   network.ListPeople();
   network.ListFiles();
+  network.ListCommits();
 
   return 0;
 }

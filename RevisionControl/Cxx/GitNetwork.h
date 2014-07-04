@@ -42,6 +42,8 @@ public:
 
   void ListFiles() const;
 
+  void ListCommits() const;
+
 private:
 
   CommitsContainer   commits;
