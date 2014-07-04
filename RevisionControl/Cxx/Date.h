@@ -34,10 +34,20 @@ public:
 
   void Set( const std::string & datestring );
 
+  void Print( std::ostream & os );
+
 private:
 
+  void AccountForTimeZone( const std::string & datestring );
+
   typedef std::chrono::time_point< std::chrono::system_clock > TimePointType;
-  TimePointType   timePoint;
+
+  // time interval in minutes.
+  typedef std::chrono::duration< int, std::ratio<60> >         TimeDurationType;
+
+  TimePointType     localTimePoint;
+
+  TimeDurationType  timeZoneDifference;
 
 };
 

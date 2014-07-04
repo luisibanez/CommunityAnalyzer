@@ -19,7 +19,9 @@
 #include "Date.h"
 
 #include <ctime>
+#include <chrono>
 #include <iostream>
+#include <sstream>
 
 namespace GitStatistics
 {
@@ -37,17 +39,42 @@ Date::Set( const std::string & datestring )
 {
   std::tm tm;
   strptime( datestring.c_str(),"%a, %d %b %Y %H:%M:%S %Z", &tm);
-  this->timePoint = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
-  // quick verification
-  std::time_t tt = std::chrono::system_clock::to_time_t( this->timePoint );
-  std::string timeString = ctime(&tt);
+  this->localTimePoint = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
-  std::cout << "Input Time = " << datestring << std::endl;
-  std::cout << "Parse Time = " << timeString << std::endl;
+  this->AccountForTimeZone( datestring );
+}
 
-  // Note: Time zone is note being taken into account correctly.
-  // Must investigate this further.
+void
+Date::AccountForTimeZone( const std::string & datestring )
+{
+  std::string timeZoneSignString     =  datestring.substr(datestring.size()-5,1);
+  std::string timeZoneHoursString    =  datestring.substr(datestring.size()-4,2);
+  std::string timeZoneMinutessString =  datestring.substr(datestring.size()-2,2);
+
+  std::chrono::hours   timeZoneHours(   atoi( timeZoneHoursString.c_str()    ) );
+  std::chrono::minutes timeZoneMinutes( atoi( timeZoneMinutessString.c_str() ) );
+
+  int timeZoneSign = timeZoneSignString == "-" ? -1 : 1;
+
+  this->timeZoneDifference = ( timeZoneHours + timeZoneMinutes ) * timeZoneSign;
+
+  this->Print( std::cout );
+}
+
+void
+Date::Print( std::ostream & outputStream )
+{
+  std::time_t localeTime = std::chrono::system_clock::to_time_t( this->localTimePoint );
+  std::string localTimeString = ctime(&localeTime);
+
+  TimePointType universalTimePoint = this->localTimePoint + this->timeZoneDifference;
+
+  std::time_t universalTime = std::chrono::system_clock::to_time_t( universalTimePoint );
+  std::string universalTimeString = ctime( &universalTime );
+
+  outputStream << "Local Time = " << localTimeString;
+  outputStream << "UTC   Time = " << universalTimeString;
 }
 
 }
