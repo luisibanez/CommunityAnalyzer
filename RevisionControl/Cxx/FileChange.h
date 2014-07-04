@@ -20,6 +20,7 @@
 #define __FileChange_h
 
 #include <string>
+#include <iostream>
 
 namespace GitStatistics
 {
@@ -34,6 +35,8 @@ public:
   void SetNumberOfLinesAdded(unsigned int);
   void SetNumberOfLinesRemoved(unsigned int);
   void SetFileName(const std::string & filename);
+
+  void Print( std::ostream & outputStream ) const;
 
 private:
 

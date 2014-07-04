@@ -39,5 +39,10 @@ const std::string & Person::GetName() const
   return this->name;
 }
 
+void Person::Print( std::ostream & outuptStream ) const
+{
+  outuptStream << this->name << std::endl;
+}
+
 }
 

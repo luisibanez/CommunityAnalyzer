@@ -58,12 +58,10 @@ Date::AccountForTimeZone( const std::string & datestring )
   int timeZoneSign = timeZoneSignString == "-" ? -1 : 1;
 
   this->timeZoneDifference = ( timeZoneHours + timeZoneMinutes ) * timeZoneSign;
-
-  this->Print( std::cout );
 }
 
 void
-Date::Print( std::ostream & outputStream )
+Date::Print( std::ostream & outputStream ) const
 {
   std::time_t localeTime = std::chrono::system_clock::to_time_t( this->localTimePoint );
   std::string localTimeString = ctime(&localeTime);

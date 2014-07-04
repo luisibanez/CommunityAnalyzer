@@ -20,6 +20,7 @@
 #define __Person_h
 
 #include <string>
+#include <iostream>
 
 namespace GitStatistics
 {
@@ -33,6 +34,8 @@ public:
   void SetName( const std::string & namevalue );
 
   const std::string & GetName() const;
+
+  void Print( std::ostream & outuptStream ) const;
 
 private:
 

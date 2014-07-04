@@ -18,6 +18,8 @@
 
 #include "FileChange.h"
 
+#include <iomanip>
+
 namespace GitStatistics
 {
 
@@ -54,6 +56,14 @@ void
 FileChange::SetFileName(const std::string & filename)
 {
   this->fileName = filename;
+}
+
+void
+FileChange::Print( std::ostream & outputStream ) const
+{
+  outputStream << std::setw(5) << this->numberOfLinesAdded << " ";
+  outputStream << std::setw(5) << this->numberOfLinesRemoved << " ";
+  outputStream << this->fileName << std::endl;
 }
 
 }

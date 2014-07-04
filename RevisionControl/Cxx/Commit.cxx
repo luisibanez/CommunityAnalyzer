@@ -86,4 +86,20 @@ void Commit::AddFileChange( const std::string & filechangestring )
   this->fileChanges[fileName] = change;
 }
 
+void
+Commit::Print( std::ostream & outputStream ) const
+{
+  outputStream << "Commit: " << this->hash << std::endl;
+  this->date.Print( outputStream );
+  outputStream << "Author:   ";
+  this->author.Print( outputStream );
+  outputStream << "Commiter: ";
+  this->committer.Print( outputStream );
+
+  for( const auto & filechange : this->fileChanges )
+    {
+    filechange.second.Print( outputStream );
+    }
+}
+
 }

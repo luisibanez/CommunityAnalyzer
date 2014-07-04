@@ -49,6 +49,8 @@ public:
 
   void AddFileChange( const std::string & filechangestring );
 
+  void Print( std::ostream & os ) const;
+
 private:
 
   typedef std::unordered_map< std::string, FileChange >  FileChangesContainer;

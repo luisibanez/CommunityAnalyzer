@@ -38,11 +38,14 @@ PeopleContainer::AddPerson( const Person & newperson )
 }
 
 void
-PeopleContainer::List() const
+PeopleContainer::Print( std::ostream & outputStream ) const
 {
+  outputStream << "List of People" << std::endl;
+  outputStream << this->container.size() << " entries" << std::endl;
+
   for(const auto & person : this->container )
     {
-    std::cout << person.second.GetName() << std::endl;
+    outputStream << person.second.GetName() << std::endl;
     }
 }
 

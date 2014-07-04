@@ -35,7 +35,7 @@ public:
 
   void AddPerson( const Person & newperson );
 
-  void List() const;
+  void Print( std::ostream & outputStream ) const;
 
 private:
 
