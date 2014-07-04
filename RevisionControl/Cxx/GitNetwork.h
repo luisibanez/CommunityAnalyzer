@@ -44,6 +44,8 @@ public:
 
   void ListCommits() const;
 
+  void TotalActivityPerAuthor() const;
+
 private:
 
   CommitsContainer   commits;

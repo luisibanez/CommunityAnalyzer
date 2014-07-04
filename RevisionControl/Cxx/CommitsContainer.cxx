@@ -29,6 +29,35 @@ CommitsContainer::~CommitsContainer()
 {
 }
 
+CommitsContainer::Iterator
+CommitsContainer::Begin()
+{
+  return this->container.begin();
+}
+
+CommitsContainer::ConstIterator
+CommitsContainer::Begin() const
+{
+  return this->container.begin();
+}
+
+CommitsContainer::Iterator
+CommitsContainer::End()
+{
+  return this->container.end();
+}
+
+CommitsContainer::ConstIterator
+CommitsContainer::End() const
+{
+  return this->container.end();
+}
+
+size_t
+CommitsContainer::Size() const
+{
+  return this->container.size();
+}
 
 void
 CommitsContainer::Add( const Commit & commit )

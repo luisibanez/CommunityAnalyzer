@@ -32,9 +32,14 @@ public:
   ~FileChange();
   FileChange(const FileChange & other);
 
-  void SetNumberOfLinesAdded(unsigned int);
-  void SetNumberOfLinesRemoved(unsigned int);
+  void SetNumberOfLinesAdded(size_t);
+  void SetNumberOfLinesRemoved(size_t);
   void SetFileName(const std::string & filename);
+
+  size_t GetNumberOfLinesAdded() const;
+  size_t GetNumberOfLinesRemoved() const;
+
+  const std::string & GetFileName() const;
 
   void Print( std::ostream & outputStream ) const;
 

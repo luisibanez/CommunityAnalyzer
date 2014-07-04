@@ -146,4 +146,43 @@ void GitNetwork::ListCommits() const
   this->commits.Print( std::cout );
 }
 
+void GitNetwork::TotalActivityPerAuthor() const
+{
+  typedef struct {
+    size_t numberOfLinesAdded;
+    size_t numberOfLinesRemoved;
+    size_t numberOfCommits;
+    } ChangesType;
+
+  typedef std::unordered_map< std::string, ChangesType >  ChangesContainerType;
+
+  CommitsContainer::ConstIterator citr = this->commits.Begin();
+  CommitsContainer::ConstIterator cend = this->commits.End();
+
+  std::cout << this->commits.Size() << " total commits" << std::endl;
+
+  ChangesContainerType changesPerAuthor;
+
+  while( citr != cend )
+    {
+    const Commit & commit = citr->second;
+    std::cout << citr->second.GetHash() << std::endl;
+    ChangesType & change = changesPerAuthor[commit.GetAuthor().GetName()];
+    change.numberOfLinesAdded += commit.GetNumberOfLinesAdded();
+    change.numberOfLinesRemoved += commit.GetNumberOfLinesRemoved();
+    change.numberOfCommits++;
+    ++citr;
+    }
+
+  for( const auto & author : changesPerAuthor )
+    {
+    const ChangesType & changes = author.second;
+    std::cout << author.first << " ";
+    std::cout << changes.numberOfCommits << " ";
+    std::cout << changes.numberOfLinesAdded << " ";
+    std::cout << changes.numberOfLinesRemoved << std::endl;
+    }
+
+}
+
 }

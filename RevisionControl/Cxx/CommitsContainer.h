@@ -42,6 +42,19 @@ private:
 
   ContainerType     container;
 
+public:
+
+  typedef ContainerType::iterator         Iterator;
+  typedef ContainerType::const_iterator   ConstIterator;
+
+  Iterator Begin();
+  ConstIterator Begin() const;
+
+  Iterator End();
+  ConstIterator End() const;
+
+  size_t Size() const;
+
 };
 
 }
