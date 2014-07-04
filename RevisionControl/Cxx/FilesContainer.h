@@ -20,6 +20,7 @@
 #define __FilesContainer_h
 
 #include <string>
+#include <unordered_map>
 
 #include "File.h"
 
@@ -29,8 +30,12 @@ namespace GitStatistics
 class FilesContainer
 {
 public:
-  FilesContainer() {}
-  ~FilesContainer() {}
+  FilesContainer();
+  ~FilesContainer();
+
+  void AddFile( const File & newfile );
+
+  void Print( std::ostream & outputStream ) const;
 
 private:
 

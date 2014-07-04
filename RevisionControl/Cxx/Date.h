@@ -34,7 +34,7 @@ public:
 
   void Set( const std::string & datestring );
 
-  void Print( std::ostream & os );
+  void Print( std::ostream & os ) const;
 
 private:
 

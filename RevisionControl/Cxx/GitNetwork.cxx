@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 namespace GitStatistics
 {
@@ -57,31 +58,27 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
       {
       Commit commit;
       std::string hash = inputLine.substr(8,std::string::npos);
-      std::cout << "hash = " << hash << std::endl;
       commit.SetHash( hash );
 
       std::getline( inputFile, inputLine );
       if( inputLine.find("Author:") != std::string::npos )
         {
         std::string authorName = inputLine.substr(8,std::string::npos);
-        std::cout << "author = " << authorName << std::endl;
         commit.SetAuthor( authorName );
         Person author;
         author.SetName( authorName );
-        people.AddPerson( author );
+        this->people.AddPerson( author );
 
         std::getline( inputFile, inputLine );
         if( inputLine.find("Date:") != std::string::npos )
           {
           std::string dateString = inputLine.substr(6,std::string::npos);
-          std::cout << "date = " << dateString << std::endl;
           commit.SetDate( dateString );
 
           std::getline( inputFile, inputLine );
           if( inputLine.find("Committer:") != std::string::npos )
             {
             std::string committerName = inputLine.substr(11,std::string::npos);
-            std::cout << "committer = " << committerName << std::endl;
             commit.SetCommitter( committerName );
 
             // Now attempt to parse the changed files
@@ -106,8 +103,19 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
               else
                 {
                 // This must be one of the changed files
-                std::cout << "File changed " << inputLine << std::endl;
                 commit.AddFileChange( inputLine );
+
+                unsigned int linesAdded;
+                unsigned int linesDeleted;
+                std::string fileName;
+
+                std::istringstream(inputLine) >> linesAdded >> linesDeleted >> fileName;
+
+                File newFile;
+
+                newFile.SetName( fileName );
+
+                this->files.AddFile( newFile );
                 }
 
               }
@@ -118,6 +126,8 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 
         }
       this->AddCommit( commit );
+      commit.Print( std::cout );
+      std::cout << std::endl;
       }
 
     }
@@ -125,8 +135,12 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 
 void GitNetwork::ListPeople() const
 {
-  std::cout << "List of People" << std::endl;
-  this->people.List();
+  this->people.Print( std::cout );
+}
+
+void GitNetwork::ListFiles() const
+{
+  this->files.Print( std::cout );
 }
 
 }

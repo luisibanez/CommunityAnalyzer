@@ -28,6 +28,7 @@ int main( int argc, char * argv [] )
   network.ParseInputFile( argv[1] );
 
   network.ListPeople();
+  network.ListFiles();
 
   return 0;
 }
