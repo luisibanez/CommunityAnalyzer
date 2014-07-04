@@ -16,30 +16,28 @@
  *
  *=========================================================================*/
 
-#ifndef __File_h
-#define __File_h
-
-#include <string>
+#include "File.h"
 
 namespace GitStatistics
 {
 
-class File
+File::File()
 {
-public:
-  File();
-  ~File();
+}
 
-  void SetName( const std::string & filename );
+File::~File()
+{
+}
 
-  const std::string & GetName() const;
+void File::SetName( const std::string & filename )
+{
+  this->name = filename;
+}
 
-private:
-
-  std::string     name;
-
-};
+const std::string & File::GetName() const
+{
+  return this->name;
+}
 
 }
 
-#endif

@@ -47,6 +47,8 @@ PeopleContainer::Print( std::ostream & outputStream ) const
     {
     outputStream << person.second.GetName() << std::endl;
     }
+
+  outputStream << std::endl;
 }
 
 }

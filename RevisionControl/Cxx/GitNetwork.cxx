@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 namespace GitStatistics
 {
@@ -66,7 +67,7 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
         commit.SetAuthor( authorName );
         Person author;
         author.SetName( authorName );
-        people.AddPerson( author );
+        this->people.AddPerson( author );
 
         std::getline( inputFile, inputLine );
         if( inputLine.find("Date:") != std::string::npos )
@@ -103,6 +104,18 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
                 {
                 // This must be one of the changed files
                 commit.AddFileChange( inputLine );
+
+                unsigned int linesAdded;
+                unsigned int linesDeleted;
+                std::string fileName;
+
+                std::istringstream(inputLine) >> linesAdded >> linesDeleted >> fileName;
+
+                File newFile;
+
+                newFile.SetName( fileName );
+
+                this->files.AddFile( newFile );
                 }
 
               }
@@ -123,6 +136,11 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 void GitNetwork::ListPeople() const
 {
   this->people.Print( std::cout );
+}
+
+void GitNetwork::ListFiles() const
+{
+  this->files.Print( std::cout );
 }
 
 }

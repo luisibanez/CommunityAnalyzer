@@ -16,30 +16,39 @@
  *
  *=========================================================================*/
 
-#ifndef __File_h
-#define __File_h
+#include "FilesContainer.h"
 
-#include <string>
+#include <iostream>
 
 namespace GitStatistics
 {
 
-class File
+FilesContainer::FilesContainer()
 {
-public:
-  File();
-  ~File();
-
-  void SetName( const std::string & filename );
-
-  const std::string & GetName() const;
-
-private:
-
-  std::string     name;
-
-};
-
 }
 
-#endif
+FilesContainer::~FilesContainer()
+{
+}
+
+void
+FilesContainer::AddFile( const File & newfile )
+{
+  this->container[newfile.GetName()]=newfile;
+}
+
+void
+FilesContainer::Print( std::ostream & outputStream ) const
+{
+  outputStream << "List of Files" << std::endl;
+  outputStream << this->container.size() << " entries" << std::endl;
+
+  for(const auto & file : this->container )
+    {
+    outputStream << file.second.GetName() << std::endl;
+    }
+
+  outputStream << std::endl;
+}
+
+}

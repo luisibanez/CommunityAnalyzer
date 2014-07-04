@@ -40,6 +40,8 @@ public:
 
   void ListPeople() const;
 
+  void ListFiles() const;
+
 private:
 
   CommitsContainer   commits;

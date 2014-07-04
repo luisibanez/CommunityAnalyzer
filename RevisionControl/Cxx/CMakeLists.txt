@@ -5,7 +5,9 @@ ADD_EXECUTABLE(GitStatisticsAnalyzer
   Commit.cxx
   CommitsContainer.cxx
   Date.cxx
+  File.cxx
   FileChange.cxx
+  FilesContainer.cxx
   GitStatisticsParser.cxx
   Person.cxx
   PeopleContainer.cxx
