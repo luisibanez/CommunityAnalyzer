@@ -30,7 +30,13 @@ int main( int argc, char * argv [] )
   network.ListPeople();
   network.ListFiles();
   network.ListCommits();
-  network.TotalActivityPerAuthor();
+
+  network.ComputeTotalActivityPerAuthor();
+
+  network.ReportActivityPerAuthorSortedByCommits();
+  network.ReportActivityPerAuthorSortedByLinesAdded();
+  network.ReportActivityPerAuthorSortedByLinesRemoved();
+  network.ReportActivityPerAuthorSortedByLinesTouched();
 
   return 0;
 }

@@ -1,6 +1,7 @@
 PROJECT(GitStatistics)
 
 ADD_EXECUTABLE(GitStatisticsAnalyzer
+  AuthorChanges.cxx
   GitNetwork.cxx
   Commit.cxx
   CommitsContainer.cxx

@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 namespace GitStatistics
 {
@@ -168,20 +169,12 @@ void GitNetwork::ListCommits() const
   this->commits.Print( std::cout );
 }
 
-void GitNetwork::TotalActivityPerAuthor() const
+void GitNetwork::ComputeTotalActivityPerAuthor() const
 {
-  typedef struct {
-    Commit::NumberOfLinesType numberOfLinesAdded;
-    Commit::NumberOfLinesType numberOfLinesRemoved;
-    size_t numberOfCommits;
-    } ChangesType;
-
-  typedef std::unordered_map< std::string, ChangesType >  ChangesContainerType;
+  typedef std::unordered_map< std::string, AuthorChanges >  ChangesContainerType;
 
   CommitsContainer::ConstIterator citr = this->commits.Begin();
   CommitsContainer::ConstIterator cend = this->commits.End();
-
-  std::cout << this->commits.Size() << " total commits" << std::endl;
 
   ChangesContainerType changesPerAuthor;
 
@@ -193,29 +186,116 @@ void GitNetwork::TotalActivityPerAuthor() const
 
     if( changesPerAuthor.count(authorName) == 0 )
       {
-      ChangesType newchange;
-      newchange.numberOfCommits = 0;
-      newchange.numberOfLinesAdded = 0;
-      newchange.numberOfLinesRemoved = 0;
+      AuthorChanges newchange;
+      newchange.SetAuthorName( authorName );
       changesPerAuthor[authorName] = newchange;
       }
 
-    ChangesType & change = changesPerAuthor[authorName];
-    change.numberOfLinesAdded += commit.GetNumberOfLinesAdded();
-    change.numberOfLinesRemoved += commit.GetNumberOfLinesRemoved();
-    change.numberOfCommits++;
+    AuthorChanges & change = changesPerAuthor[authorName];
+
+    change.SetNumberOfLinesAdded( change.GetNumberOfLinesAdded() + commit.GetNumberOfLinesAdded() );
+    change.SetNumberOfLinesRemoved( change.GetNumberOfLinesRemoved() + commit.GetNumberOfLinesRemoved() );
+    change.SetNumberOfCommits( change.GetNumberOfCommits() + 1 );
 
     ++citr;
     }
 
-  for( const auto & author : changesPerAuthor )
+  for( const auto & change : changesPerAuthor )
     {
-    const ChangesType & changes = author.second;
+    this->sortedChangesPerAuthor.push_back( change.second );
+    }
 
-    std::cout << author.first << " ";
-    std::cout << changes.numberOfCommits << " ";
-    std::cout << changes.numberOfLinesAdded << " ";
-    std::cout << changes.numberOfLinesRemoved << std::endl;
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByCommits() const
+{
+
+  struct changesOrderedByCommit {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return (a.GetNumberOfCommits()>b.GetNumberOfCommits());
+      }
+  } orderByNumberOfCommits;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfCommits);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of commits" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
+    }
+
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByLinesAdded() const
+{
+
+  struct changesOrderedByLinesAdded {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return (a.GetNumberOfLinesAdded()>b.GetNumberOfLinesAdded());
+      }
+  } orderByNumberOfLinesAdded;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfLinesAdded);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of lines added" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
+    }
+
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByLinesRemoved() const
+{
+
+  struct changesOrderedByLinesRemoved {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return (a.GetNumberOfLinesRemoved()>b.GetNumberOfLinesRemoved());
+      }
+  } orderByNumberOfLinesRemoved;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfLinesRemoved);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of lines removed" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
+    }
+
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByLinesTouched() const
+{
+
+  struct changesOrderedByLinesTouched {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return ( ( a.GetNumberOfLinesAdded() + a.GetNumberOfLinesRemoved() ) >
+               ( b.GetNumberOfLinesAdded() + b.GetNumberOfLinesRemoved() )    );
+      }
+  } orderByNumberOfCommits;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfCommits);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of lines touched" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
     }
 
 }
