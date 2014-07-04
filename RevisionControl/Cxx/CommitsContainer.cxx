@@ -29,11 +29,55 @@ CommitsContainer::~CommitsContainer()
 {
 }
 
+CommitsContainer::Iterator
+CommitsContainer::Begin()
+{
+  return this->container.begin();
+}
+
+CommitsContainer::ConstIterator
+CommitsContainer::Begin() const
+{
+  return this->container.begin();
+}
+
+CommitsContainer::Iterator
+CommitsContainer::End()
+{
+  return this->container.end();
+}
+
+CommitsContainer::ConstIterator
+CommitsContainer::End() const
+{
+  return this->container.end();
+}
+
+size_t
+CommitsContainer::Size() const
+{
+  return this->container.size();
+}
 
 void
 CommitsContainer::Add( const Commit & commit )
 {
   this->container[commit.GetHash()] = commit;
+}
+
+void
+CommitsContainer::Print( std::ostream & outputStream ) const
+{
+  outputStream << "List of Commits" << std::endl;
+  outputStream << this->container.size() << " entries" << std::endl;
+  outputStream << std::endl;
+
+  for(const auto & entry : this->container )
+    {
+    entry.second.Print( outputStream );
+    outputStream << std::endl;
+    }
+
 }
 
 }

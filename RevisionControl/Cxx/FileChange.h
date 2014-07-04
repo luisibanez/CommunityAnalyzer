@@ -28,21 +28,29 @@ namespace GitStatistics
 class FileChange
 {
 public:
+
   FileChange();
   ~FileChange();
   FileChange(const FileChange & other);
 
-  void SetNumberOfLinesAdded(unsigned int);
-  void SetNumberOfLinesRemoved(unsigned int);
+  typedef unsigned long NumberOfLinesType;
+
+  void SetNumberOfLinesAdded(NumberOfLinesType);
+  void SetNumberOfLinesRemoved(NumberOfLinesType);
   void SetFileName(const std::string & filename);
+
+  NumberOfLinesType GetNumberOfLinesAdded() const;
+  NumberOfLinesType GetNumberOfLinesRemoved() const;
+
+  const std::string & GetFileName() const;
 
   void Print( std::ostream & outputStream ) const;
 
 private:
 
-  unsigned int    numberOfLinesAdded;
-  unsigned int    numberOfLinesRemoved;
-  std::string     fileName;
+  NumberOfLinesType     numberOfLinesAdded;
+  NumberOfLinesType     numberOfLinesRemoved;
+  std::string           fileName;
 
 };
 

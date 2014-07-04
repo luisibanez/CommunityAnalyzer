@@ -39,6 +39,10 @@ public:
 
   const std::string & GetHash() const;
 
+  const Person & GetAuthor() const;
+
+  const Person & GetCommitter() const;
+
   void SetHash( const std::string & hashvalue );
 
   void SetAuthor( const std::string & authorname );
@@ -47,7 +51,13 @@ public:
 
   void SetDate( const std::string & datestring );
 
-  void AddFileChange( const std::string & filechangestring );
+  typedef FileChange::NumberOfLinesType  NumberOfLinesType;
+
+  void AddFileChange( NumberOfLinesType linesAdded, NumberOfLinesType linesRemoved, const std::string & filechangestring );
+
+  NumberOfLinesType GetNumberOfLinesAdded() const;
+
+  NumberOfLinesType GetNumberOfLinesRemoved() const;
 
   void Print( std::ostream & os ) const;
 

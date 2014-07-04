@@ -102,14 +102,36 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
                 }
               else
                 {
-                // This must be one of the changed files
-                commit.AddFileChange( inputLine );
 
-                unsigned int linesAdded;
-                unsigned int linesDeleted;
+                if( inputLine.substr(0,7) == "Commit:" )
+                  {
+                  // No files were changed, and we are starting the next commit.
+                  // Therefore, add the commit so far, and then break the cicle.
+                  this->AddCommit( commit );
+                  break;
+                  }
+
+                // This must be one of the changed files
+                std::string linesAddedString;
+                std::string linesRemovedString;
                 std::string fileName;
 
-                std::istringstream(inputLine) >> linesAdded >> linesDeleted >> fileName;
+                std::istringstream(inputLine) >> linesAddedString >> linesRemovedString >> fileName;
+
+                Commit::NumberOfLinesType linesAdded = 0;
+                Commit::NumberOfLinesType linesRemoved = 0;
+
+                if( linesAddedString != "-" )
+                  {
+                  std::istringstream(linesAddedString) >> linesAdded;
+                  }
+
+                if( linesRemovedString != "-" )
+                  {
+                  std::istringstream(linesRemovedString) >> linesRemoved;
+                  }
+
+                commit.AddFileChange( linesAdded, linesRemoved, fileName );
 
                 File newFile;
 
@@ -126,8 +148,6 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 
         }
       this->AddCommit( commit );
-      commit.Print( std::cout );
-      std::cout << std::endl;
       }
 
     }
@@ -141,6 +161,63 @@ void GitNetwork::ListPeople() const
 void GitNetwork::ListFiles() const
 {
   this->files.Print( std::cout );
+}
+
+void GitNetwork::ListCommits() const
+{
+  this->commits.Print( std::cout );
+}
+
+void GitNetwork::TotalActivityPerAuthor() const
+{
+  typedef struct {
+    Commit::NumberOfLinesType numberOfLinesAdded;
+    Commit::NumberOfLinesType numberOfLinesRemoved;
+    size_t numberOfCommits;
+    } ChangesType;
+
+  typedef std::unordered_map< std::string, ChangesType >  ChangesContainerType;
+
+  CommitsContainer::ConstIterator citr = this->commits.Begin();
+  CommitsContainer::ConstIterator cend = this->commits.End();
+
+  std::cout << this->commits.Size() << " total commits" << std::endl;
+
+  ChangesContainerType changesPerAuthor;
+
+  while( citr != cend )
+    {
+    const Commit & commit = citr->second;
+
+    const std::string authorName = commit.GetAuthor().GetName();
+
+    if( changesPerAuthor.count(authorName) == 0 )
+      {
+      ChangesType newchange;
+      newchange.numberOfCommits = 0;
+      newchange.numberOfLinesAdded = 0;
+      newchange.numberOfLinesRemoved = 0;
+      changesPerAuthor[authorName] = newchange;
+      }
+
+    ChangesType & change = changesPerAuthor[authorName];
+    change.numberOfLinesAdded += commit.GetNumberOfLinesAdded();
+    change.numberOfLinesRemoved += commit.GetNumberOfLinesRemoved();
+    change.numberOfCommits++;
+
+    ++citr;
+    }
+
+  for( const auto & author : changesPerAuthor )
+    {
+    const ChangesType & changes = author.second;
+
+    std::cout << author.first << " ";
+    std::cout << changes.numberOfCommits << " ";
+    std::cout << changes.numberOfLinesAdded << " ";
+    std::cout << changes.numberOfLinesRemoved << std::endl;
+    }
+
 }
 
 }

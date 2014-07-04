@@ -29,6 +29,8 @@ int main( int argc, char * argv [] )
 
   network.ListPeople();
   network.ListFiles();
+  network.ListCommits();
+  network.TotalActivityPerAuthor();
 
   return 0;
 }

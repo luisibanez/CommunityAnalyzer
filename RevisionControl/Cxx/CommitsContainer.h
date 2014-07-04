@@ -34,11 +34,26 @@ public:
 
   void Add( const Commit & commit );
 
+  void Print( std::ostream & outputStream ) const;
+
 private:
 
   typedef std::unordered_map< std::string, Commit >  ContainerType;
 
   ContainerType     container;
+
+public:
+
+  typedef ContainerType::iterator         Iterator;
+  typedef ContainerType::const_iterator   ConstIterator;
+
+  Iterator Begin();
+  ConstIterator Begin() const;
+
+  Iterator End();
+  ConstIterator End() const;
+
+  size_t Size() const;
 
 };
 
