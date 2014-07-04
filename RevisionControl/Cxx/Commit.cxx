@@ -55,9 +55,10 @@ const Person & Commit::GetCommitter() const
   return this->committer;
 }
 
-size_t Commit::GetNumberOfLinesAdded() const
+Commit::NumberOfLinesType
+Commit::GetNumberOfLinesAdded() const
 {
-  size_t numberOfLinesAdded = 0;
+  NumberOfLinesType numberOfLinesAdded = 0;
 
   for( const auto & filechange : this->fileChanges )
     {
@@ -67,9 +68,10 @@ size_t Commit::GetNumberOfLinesAdded() const
   return numberOfLinesAdded;
 }
 
-size_t Commit::GetNumberOfLinesRemoved() const
+Commit::NumberOfLinesType
+Commit::GetNumberOfLinesRemoved() const
 {
-  size_t numberOfLinesRemoved = 0;
+  NumberOfLinesType numberOfLinesRemoved = 0;
 
   for( const auto & filechange : this->fileChanges )
     {
@@ -77,7 +79,6 @@ size_t Commit::GetNumberOfLinesRemoved() const
     }
 
   return numberOfLinesRemoved;
-
 }
 
 void Commit::SetHash( const std::string & hashvalue )
@@ -100,23 +101,13 @@ void Commit::SetDate( const std::string & datestring )
   this->date.Set( datestring );
 }
 
-void Commit::AddFileChange( const std::string & filechangestring )
+void Commit::AddFileChange( NumberOfLinesType linesAdded, NumberOfLinesType linesRemoved, const std::string & fileName )
 {
   FileChange change;
 
-  std::istringstream inputStream( filechangestring );
-
-  size_t numberOfLinesAdded;
-  size_t numberOfLinesRemoved;
-  std::string fileName;
-
-  inputStream >> numberOfLinesAdded;
-  inputStream >> numberOfLinesRemoved;
-  inputStream >> fileName;
-
-  change.SetNumberOfLinesAdded(numberOfLinesAdded);
-  change.SetNumberOfLinesRemoved(numberOfLinesRemoved);
-  change.SetFileName(fileName);
+  change.SetNumberOfLinesAdded( linesAdded );
+  change.SetNumberOfLinesRemoved( linesRemoved );
+  change.SetFileName( fileName );
 
   this->fileChanges[fileName] = change;
 }

@@ -51,13 +51,15 @@ public:
 
   void SetDate( const std::string & datestring );
 
-  void AddFileChange( const std::string & filechangestring );
+  typedef FileChange::NumberOfLinesType  NumberOfLinesType;
+
+  void AddFileChange( NumberOfLinesType linesAdded, NumberOfLinesType linesRemoved, const std::string & filechangestring );
+
+  NumberOfLinesType GetNumberOfLinesAdded() const;
+
+  NumberOfLinesType GetNumberOfLinesRemoved() const;
 
   void Print( std::ostream & os ) const;
-
-  size_t GetNumberOfLinesAdded() const;
-
-  size_t GetNumberOfLinesRemoved() const;
 
 private:
 

@@ -28,16 +28,19 @@ namespace GitStatistics
 class FileChange
 {
 public:
+
   FileChange();
   ~FileChange();
   FileChange(const FileChange & other);
 
-  void SetNumberOfLinesAdded(size_t);
-  void SetNumberOfLinesRemoved(size_t);
+  typedef unsigned long NumberOfLinesType;
+
+  void SetNumberOfLinesAdded(NumberOfLinesType);
+  void SetNumberOfLinesRemoved(NumberOfLinesType);
   void SetFileName(const std::string & filename);
 
-  size_t GetNumberOfLinesAdded() const;
-  size_t GetNumberOfLinesRemoved() const;
+  NumberOfLinesType GetNumberOfLinesAdded() const;
+  NumberOfLinesType GetNumberOfLinesRemoved() const;
 
   const std::string & GetFileName() const;
 
@@ -45,9 +48,9 @@ public:
 
 private:
 
-  unsigned int    numberOfLinesAdded;
-  unsigned int    numberOfLinesRemoved;
-  std::string     fileName;
+  NumberOfLinesType     numberOfLinesAdded;
+  NumberOfLinesType     numberOfLinesRemoved;
+  std::string           fileName;
 
 };
 

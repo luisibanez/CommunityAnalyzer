@@ -41,13 +41,14 @@ FileChange::FileChange( const FileChange & other )
 }
 
 void
-FileChange::SetNumberOfLinesAdded(size_t numberOfLines)
+FileChange::SetNumberOfLinesAdded(NumberOfLinesType numberOfLines)
 {
   this->numberOfLinesAdded = numberOfLines;
+
 }
 
 void
-FileChange::SetNumberOfLinesRemoved(size_t numberOfLines)
+FileChange::SetNumberOfLinesRemoved(NumberOfLinesType numberOfLines)
 {
   this->numberOfLinesRemoved = numberOfLines;
 }
@@ -58,16 +59,16 @@ FileChange::SetFileName(const std::string & filename)
   this->fileName = filename;
 }
 
-size_t
+FileChange::NumberOfLinesType
 FileChange::GetNumberOfLinesAdded() const
 {
-  this->numberOfLinesAdded;
+  return this->numberOfLinesAdded;
 }
 
-size_t
+FileChange::NumberOfLinesType
 FileChange::GetNumberOfLinesRemoved() const
 {
-  this->numberOfLinesRemoved;
+  return this->numberOfLinesRemoved;
 }
 
 const std::string &
