@@ -17,12 +17,10 @@
  *=========================================================================*/
 
 #include "GitNetwork.h"
-#include "AuthorChanges.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <vector>
 #include <algorithm>
 
 namespace GitStatistics
@@ -171,14 +169,12 @@ void GitNetwork::ListCommits() const
   this->commits.Print( std::cout );
 }
 
-void GitNetwork::TotalActivityPerAuthor() const
+void GitNetwork::ComputeTotalActivityPerAuthor() const
 {
   typedef std::unordered_map< std::string, AuthorChanges >  ChangesContainerType;
 
   CommitsContainer::ConstIterator citr = this->commits.Begin();
   CommitsContainer::ConstIterator cend = this->commits.End();
-
-  std::cout << this->commits.Size() << " total commits" << std::endl;
 
   ChangesContainerType changesPerAuthor;
 
@@ -204,22 +200,100 @@ void GitNetwork::TotalActivityPerAuthor() const
     ++citr;
     }
 
-  typedef std::vector< AuthorChanges >  ChangesVectorType;
-
-  ChangesVectorType sortedChangesPerAuthor;
-
   for( const auto & change : changesPerAuthor )
     {
-    sortedChangesPerAuthor.push_back( change.second );
+    this->sortedChangesPerAuthor.push_back( change.second );
     }
 
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByCommits() const
+{
+
   struct changesOrderedByCommit {
-    bool operator() (const AuthorChanges & a,const AuthorChanges & b) { return (a.GetNumberOfCommits()<b.GetNumberOfCommits());}
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return (a.GetNumberOfCommits()>b.GetNumberOfCommits());
+      }
   } orderByNumberOfCommits;
 
-  std::sort(sortedChangesPerAuthor.begin(),sortedChangesPerAuthor.end(),orderByNumberOfCommits);
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfCommits);
 
-  for( const auto & change : sortedChangesPerAuthor )
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of commits" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
+    }
+
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByLinesAdded() const
+{
+
+  struct changesOrderedByLinesAdded {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return (a.GetNumberOfLinesAdded()>b.GetNumberOfLinesAdded());
+      }
+  } orderByNumberOfLinesAdded;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfLinesAdded);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of lines added" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
+    }
+
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByLinesRemoved() const
+{
+
+  struct changesOrderedByLinesRemoved {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return (a.GetNumberOfLinesRemoved()>b.GetNumberOfLinesRemoved());
+      }
+  } orderByNumberOfLinesRemoved;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfLinesRemoved);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of lines removed" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
+    {
+    change.Print( std::cout );
+    }
+
+}
+
+void GitNetwork::ReportActivityPerAuthorSortedByLinesTouched() const
+{
+
+  struct changesOrderedByLinesTouched {
+    bool operator() (const AuthorChanges & a,const AuthorChanges & b)
+      {
+      return ( ( a.GetNumberOfLinesAdded() + a.GetNumberOfLinesRemoved() ) >
+               ( b.GetNumberOfLinesAdded() + b.GetNumberOfLinesRemoved() )    );
+      }
+  } orderByNumberOfCommits;
+
+  std::sort(this->sortedChangesPerAuthor.begin(),this->sortedChangesPerAuthor.end(),orderByNumberOfCommits);
+
+  std::cout << std::endl;
+  std::cout << "Authors sorted by number of lines touched" << std::endl;
+  std::cout << std::endl;
+
+  for( const auto & change : this->sortedChangesPerAuthor )
     {
     change.Print( std::cout );
     }

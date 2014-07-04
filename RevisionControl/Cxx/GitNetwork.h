@@ -20,10 +20,12 @@
 #define __GitNetwork_h
 
 #include <string>
+#include <vector>
 
 #include "CommitsContainer.h"
 #include "PeopleContainer.h"
 #include "FilesContainer.h"
+#include "AuthorChanges.h"
 
 namespace GitStatistics
 {
@@ -44,13 +46,28 @@ public:
 
   void ListCommits() const;
 
-  void TotalActivityPerAuthor() const;
+  void ComputeTotalActivityPerAuthor() const;
+
+  void ReportActivityPerAuthorSortedByCommits() const;
+  void ReportActivityPerAuthorSortedByLinesAdded() const;
+  void ReportActivityPerAuthorSortedByLinesRemoved() const;
+  void ReportActivityPerAuthorSortedByLinesTouched() const;
 
 private:
+
+  // Member variables
 
   CommitsContainer   commits;
   PeopleContainer    people;
   FilesContainer     files;
+
+private:
+
+  // Cached structures, therefore use mutable as modifier
+
+  typedef std::vector< AuthorChanges >  ChangesVectorType;
+
+  mutable ChangesVectorType       sortedChangesPerAuthor;
 
 };
 
