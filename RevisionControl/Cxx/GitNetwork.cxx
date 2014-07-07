@@ -22,6 +22,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <map>
 
 namespace GitStatistics
 {
@@ -298,6 +299,42 @@ void GitNetwork::ReportActivityPerAuthorSortedByLinesTouched() const
     change.Print( std::cout );
     }
 
+}
+
+void GitNetwork::ComputeMonthlyActivy() const
+{
+  typedef std::unordered_map< std::string, AuthorChanges >  ChangesContainerType;
+
+  typedef unsigned int    MonthCounterType;
+
+  typedef std::map< MonthCounterType, ChangesContainerType >  PeriodChangesContainerType;
+
+  CommitsContainer::ConstIterator citr = this->commits.Begin();
+  CommitsContainer::ConstIterator cend = this->commits.End();
+
+  ChangesContainerType changesPerAuthor;
+
+  while( citr != cend )
+    {
+    const Commit & commit = citr->second;
+
+    const std::string authorName = commit.GetAuthor().GetName();
+
+    if( changesPerAuthor.count(authorName) == 0 )
+      {
+      AuthorChanges newchange;
+      newchange.SetAuthorName( authorName );
+      changesPerAuthor[authorName] = newchange;
+      }
+
+    AuthorChanges & change = changesPerAuthor[authorName];
+
+    change.SetNumberOfLinesAdded( change.GetNumberOfLinesAdded() + commit.GetNumberOfLinesAdded() );
+    change.SetNumberOfLinesRemoved( change.GetNumberOfLinesRemoved() + commit.GetNumberOfLinesRemoved() );
+    change.SetNumberOfCommits( change.GetNumberOfCommits() + 1 );
+
+    ++citr;
+    }
 }
 
 }

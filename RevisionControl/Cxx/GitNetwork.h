@@ -53,6 +53,8 @@ public:
   void ReportActivityPerAuthorSortedByLinesRemoved() const;
   void ReportActivityPerAuthorSortedByLinesTouched() const;
 
+  void ComputeMonthlyActivy() const;
+
 private:
 
   // Member variables
