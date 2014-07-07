@@ -55,6 +55,11 @@ const Person & Commit::GetCommitter() const
   return this->committer;
 }
 
+const Date & Commit::GetDate() const
+{
+  return this->date;
+}
+
 Commit::NumberOfLinesType
 Commit::GetNumberOfLinesAdded() const
 {

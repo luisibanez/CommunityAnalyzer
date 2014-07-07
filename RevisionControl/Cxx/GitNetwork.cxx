@@ -17,12 +17,14 @@
  *=========================================================================*/
 
 #include "GitNetwork.h"
+#include "Date.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <map>
+#include <chrono>
 
 namespace GitStatistics
 {
@@ -309,16 +311,26 @@ void GitNetwork::ComputeMonthlyActivy() const
 
   typedef std::map< MonthCounterType, ChangesContainerType >  PeriodChangesContainerType;
 
+  PeriodChangesContainerType changesPerPeriodPerAuthor;
+
   CommitsContainer::ConstIterator citr = this->commits.Begin();
   CommitsContainer::ConstIterator cend = this->commits.End();
-
-  ChangesContainerType changesPerAuthor;
 
   while( citr != cend )
     {
     const Commit & commit = citr->second;
 
     const std::string authorName = commit.GetAuthor().GetName();
+
+    const Date::TimePointType & timePoint = commit.GetDate().GetUniversalTimePoint();
+
+    time_t universalTime = std::chrono::system_clock::to_time_t( timePoint );
+
+    tm utctime = *gmtime( &universalTime );    
+
+    const MonthCounterType monthsBin = utctime.tm_year * 12 + utctime.tm_mon;
+
+    ChangesContainerType & changesPerAuthor = changesPerPeriodPerAuthor[monthsBin];
 
     if( changesPerAuthor.count(authorName) == 0 )
       {
@@ -334,6 +346,25 @@ void GitNetwork::ComputeMonthlyActivy() const
     change.SetNumberOfCommits( change.GetNumberOfCommits() + 1 );
 
     ++citr;
+    }
+
+  for( const auto & periodChanges : changesPerPeriodPerAuthor )
+    {
+    const ChangesContainerType & changesPerAuthorInPeriod = periodChanges.second;
+
+    AuthorChanges::NumberOfLinesType linesTouchedInPeriod = 0;
+
+    for( const auto & changes : changesPerAuthorInPeriod )
+      {
+      const auto & changesByAuthor = changes.second;
+
+      AuthorChanges::NumberOfLinesType linesTouchedByAuthor =
+        changesByAuthor.GetNumberOfLinesAdded() + changesByAuthor.GetNumberOfLinesRemoved();
+
+      linesTouchedInPeriod += linesTouchedByAuthor;
+      }
+
+    std::cout << periodChanges.first << " " << linesTouchedInPeriod << std::endl;
     }
 }
 
