@@ -17,11 +17,15 @@
  *=========================================================================*/
 
 #include "GitNetwork.h"
+#include "Date.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <map>
+#include <set>
+#include <chrono>
 
 namespace GitStatistics
 {
@@ -119,8 +123,8 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 
                 std::istringstream(inputLine) >> linesAddedString >> linesRemovedString >> fileName;
 
-                Commit::NumberOfLinesType linesAdded = 0;
-                Commit::NumberOfLinesType linesRemoved = 0;
+                NumberOfLinesType linesAdded = 0;
+                NumberOfLinesType linesRemoved = 0;
 
                 if( linesAddedString != "-" )
                   {
@@ -298,6 +302,111 @@ void GitNetwork::ReportActivityPerAuthorSortedByLinesTouched() const
     change.Print( std::cout );
     }
 
+}
+
+void GitNetwork::ComputeMonthlyActivy() const
+{
+  typedef std::unordered_map< std::string, AuthorChanges >  ChangesContainerType;
+
+  typedef unsigned int    MonthCounterType;
+
+  typedef std::map< MonthCounterType, ChangesContainerType >  PeriodChangesContainerType;
+
+  PeriodChangesContainerType changesPerPeriodPerAuthor;
+
+  CommitsContainer::ConstIterator citr = this->commits.Begin();
+  CommitsContainer::ConstIterator cend = this->commits.End();
+
+  while( citr != cend )
+    {
+    const Commit & commit = citr->second;
+
+    const std::string authorName = commit.GetAuthor().GetName();
+
+    const Date::TimePointType & timePoint = commit.GetDate().GetUniversalTimePoint();
+
+    time_t universalTime = std::chrono::system_clock::to_time_t( timePoint );
+
+    tm utctime = *gmtime( &universalTime );
+
+    const MonthCounterType monthsBin = utctime.tm_year * 12 + utctime.tm_mon;
+
+    ChangesContainerType & changesPerAuthor = changesPerPeriodPerAuthor[monthsBin];
+
+    if( changesPerAuthor.count(authorName) == 0 )
+      {
+      AuthorChanges newchange;
+      newchange.SetAuthorName( authorName );
+      changesPerAuthor[authorName] = newchange;
+      }
+
+    AuthorChanges & change = changesPerAuthor[authorName];
+
+    change.SetNumberOfLinesAdded( change.GetNumberOfLinesAdded() + commit.GetNumberOfLinesAdded() );
+    change.SetNumberOfLinesRemoved( change.GetNumberOfLinesRemoved() + commit.GetNumberOfLinesRemoved() );
+    change.SetNumberOfCommits( change.GetNumberOfCommits() + 1 );
+
+    ++citr;
+    }
+
+  for( const auto & periodChanges : changesPerPeriodPerAuthor )
+    {
+    const ChangesContainerType & changesPerAuthorInPeriod = periodChanges.second;
+
+    NumberOfLinesType linesTouchedInPeriod = 0;
+
+    typedef std::multiset< NumberOfLinesType > ChangesPerPeriodType;
+
+    ChangesPerPeriodType changesInPeriod;
+
+    for( const auto & changes : changesPerAuthorInPeriod )
+      {
+      const auto & changesByAuthor = changes.second;
+
+      NumberOfLinesType linesTouchedByAuthor =
+        changesByAuthor.GetNumberOfLinesAdded() + changesByAuthor.GetNumberOfLinesRemoved();
+
+      changesInPeriod.insert( linesTouchedByAuthor );
+
+      linesTouchedInPeriod += linesTouchedByAuthor;
+      }
+
+    ChangesPerPeriodType::const_reverse_iterator ritr = changesInPeriod.rbegin();
+
+    NumberOfLinesType percentileChanges = 0;
+
+    const double percentile = 0.8;
+
+    //
+    // How many contributors account for 80% of the changes.
+    //
+
+    unsigned int contributorsInPercentile = 0;
+
+    while( ritr != changesInPeriod.rend() )
+      {
+      const double fractionOfChanges = double( percentileChanges ) / linesTouchedInPeriod;
+
+      if( fractionOfChanges < percentile )
+        {
+        percentileChanges += *ritr;
+        contributorsInPercentile++;
+        }
+
+      ++ritr;
+      }
+
+    const unsigned int contributorsInPeriod = changesInPeriod.size();
+
+    const double fractionOfContributors = double(contributorsInPercentile) / contributorsInPeriod;
+
+    std::cout << periodChanges.first << " ";
+    std::cout << linesTouchedInPeriod << " ";
+    std::cout << contributorsInPeriod << " ";
+    std::cout << contributorsInPercentile << " ";
+    std::cout << fractionOfContributors << std::endl;
+
+    }
 }
 
 }

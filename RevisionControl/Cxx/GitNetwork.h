@@ -53,6 +53,10 @@ public:
   void ReportActivityPerAuthorSortedByLinesRemoved() const;
   void ReportActivityPerAuthorSortedByLinesTouched() const;
 
+  void ComputeMonthlyActivy() const;
+
+  typedef Commit::NumberOfLinesType  NumberOfLinesType;
+
 private:
 
   // Member variables

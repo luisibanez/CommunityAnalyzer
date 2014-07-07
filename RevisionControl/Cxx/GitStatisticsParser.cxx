@@ -27,6 +27,7 @@ int main( int argc, char * argv [] )
 
   network.ParseInputFile( argv[1] );
 
+/*
   network.ListPeople();
   network.ListFiles();
   network.ListCommits();
@@ -37,6 +38,9 @@ int main( int argc, char * argv [] )
   network.ReportActivityPerAuthorSortedByLinesAdded();
   network.ReportActivityPerAuthorSortedByLinesRemoved();
   network.ReportActivityPerAuthorSortedByLinesTouched();
+*/
+
+  network.ComputeMonthlyActivy();
 
   return 0;
 }

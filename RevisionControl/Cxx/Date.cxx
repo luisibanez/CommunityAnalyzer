@@ -45,6 +45,19 @@ Date::Set( const std::string & datestring )
   this->AccountForTimeZone( datestring );
 }
 
+const Date::TimePointType &
+Date::GetLocalTimePoint() const
+{
+  return this->localTimePoint;
+}
+
+Date::TimePointType
+Date::GetUniversalTimePoint() const
+{
+  return this->localTimePoint + this->timeZoneDifference;
+}
+
+
 void
 Date::AccountForTimeZone( const std::string & datestring )
 {

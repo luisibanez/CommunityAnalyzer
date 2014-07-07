@@ -43,6 +43,8 @@ public:
 
   const Person & GetCommitter() const;
 
+  const Date & GetDate() const;
+
   void SetHash( const std::string & hashvalue );
 
   void SetAuthor( const std::string & authorname );
