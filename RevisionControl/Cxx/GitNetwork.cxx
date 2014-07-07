@@ -24,6 +24,7 @@
 #include <sstream>
 #include <algorithm>
 #include <map>
+#include <set>
 #include <chrono>
 
 namespace GitStatistics
@@ -122,8 +123,8 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
 
                 std::istringstream(inputLine) >> linesAddedString >> linesRemovedString >> fileName;
 
-                Commit::NumberOfLinesType linesAdded = 0;
-                Commit::NumberOfLinesType linesRemoved = 0;
+                NumberOfLinesType linesAdded = 0;
+                NumberOfLinesType linesRemoved = 0;
 
                 if( linesAddedString != "-" )
                   {
@@ -326,7 +327,7 @@ void GitNetwork::ComputeMonthlyActivy() const
 
     time_t universalTime = std::chrono::system_clock::to_time_t( timePoint );
 
-    tm utctime = *gmtime( &universalTime );    
+    tm utctime = *gmtime( &universalTime );
 
     const MonthCounterType monthsBin = utctime.tm_year * 12 + utctime.tm_mon;
 
@@ -352,19 +353,59 @@ void GitNetwork::ComputeMonthlyActivy() const
     {
     const ChangesContainerType & changesPerAuthorInPeriod = periodChanges.second;
 
-    AuthorChanges::NumberOfLinesType linesTouchedInPeriod = 0;
+    NumberOfLinesType linesTouchedInPeriod = 0;
+
+    typedef std::multiset< NumberOfLinesType > ChangesPerPeriodType;
+
+    ChangesPerPeriodType changesInPeriod;
 
     for( const auto & changes : changesPerAuthorInPeriod )
       {
       const auto & changesByAuthor = changes.second;
 
-      AuthorChanges::NumberOfLinesType linesTouchedByAuthor =
+      NumberOfLinesType linesTouchedByAuthor =
         changesByAuthor.GetNumberOfLinesAdded() + changesByAuthor.GetNumberOfLinesRemoved();
+
+      changesInPeriod.insert( linesTouchedByAuthor );
 
       linesTouchedInPeriod += linesTouchedByAuthor;
       }
 
-    std::cout << periodChanges.first << " " << linesTouchedInPeriod << std::endl;
+    ChangesPerPeriodType::const_reverse_iterator ritr = changesInPeriod.rbegin();
+
+    NumberOfLinesType percentileChanges = 0;
+
+    const double percentile = 0.8;
+
+    //
+    // How many contributors account for 80% of the changes.
+    //
+
+    unsigned int contributorsInPercentile = 0;
+
+    while( ritr != changesInPeriod.rend() )
+      {
+      const double fractionOfChanges = double( percentileChanges ) / linesTouchedInPeriod;
+
+      if( fractionOfChanges < percentile )
+        {
+        percentileChanges += *ritr;
+        contributorsInPercentile++;
+        }
+
+      ++ritr;
+      }
+
+    const unsigned int contributorsInPeriod = changesInPeriod.size();
+
+    const double fractionOfContributors = double(contributorsInPercentile) / contributorsInPeriod;
+
+    std::cout << periodChanges.first << " ";
+    std::cout << linesTouchedInPeriod << " ";
+    std::cout << contributorsInPeriod << " ";
+    std::cout << contributorsInPercentile << " ";
+    std::cout << fractionOfContributors << std::endl;
+
     }
 }
 

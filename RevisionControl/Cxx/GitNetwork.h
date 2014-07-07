@@ -55,6 +55,8 @@ public:
 
   void ComputeMonthlyActivy() const;
 
+  typedef Commit::NumberOfLinesType  NumberOfLinesType;
+
 private:
 
   // Member variables
