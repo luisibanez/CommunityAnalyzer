@@ -424,13 +424,16 @@ void GitNetwork::ComputeMonthlyActivy() const
 
     const double fractionOfContributors = double(contributorsInPercentile) / contributorsInPeriod;
 
+    const double fractionOfActiveContributors = double( contributorsInPeriod ) / double( contributorsUpToPeriod );
+
     std::cout << periodChanges.first << " ";
     std::cout << linesUpToPeriod << " ";
     std::cout << contributorsUpToPeriod << " ";
     std::cout << linesTouchedInPeriod << " ";
     std::cout << contributorsInPeriod << " ";
     std::cout << contributorsInPercentile << " ";
-    std::cout << fractionOfContributors << std::endl;
+    std::cout << fractionOfContributors << " ";
+    std::cout << fractionOfActiveContributors << std::endl;
 
     }
 }
