@@ -358,11 +358,16 @@ void GitNetwork::ComputeMonthlyActivy() const
     ++citr;
     }
 
+  NumberOfLinesType linesUpToPeriod = 0;
+
+  std::set< std::string > cumulatedAuthors;
+
   for( const auto & periodChanges : changesPerPeriodPerAuthor )
     {
     const ChangesContainerType & changesPerAuthorInPeriod = periodChanges.second;
 
-    NumberOfLinesType linesTouchedInPeriod = 0;
+    NumberOfLinesType linesAddedInPeriod = 0;
+    NumberOfLinesType linesRemovedInPeriod = 0;
 
     typedef std::multiset< NumberOfLinesType > ChangesPerPeriodType;
 
@@ -372,13 +377,21 @@ void GitNetwork::ComputeMonthlyActivy() const
       {
       const auto & changesByAuthor = changes.second;
 
-      NumberOfLinesType linesTouchedByAuthor =
-        changesByAuthor.GetNumberOfLinesAdded() + changesByAuthor.GetNumberOfLinesRemoved();
+      cumulatedAuthors.insert( changesByAuthor.GetAuthorName() );
+
+      linesAddedInPeriod += changesByAuthor.GetNumberOfLinesAdded();
+      linesRemovedInPeriod += changesByAuthor.GetNumberOfLinesRemoved();
+
+      const NumberOfLinesType linesTouchedByAuthor =
+        changesByAuthor.GetNumberOfLinesAdded() +
+        changesByAuthor.GetNumberOfLinesRemoved();
 
       changesInPeriod.insert( linesTouchedByAuthor );
-
-      linesTouchedInPeriod += linesTouchedByAuthor;
       }
+
+    NumberOfLinesType linesTouchedInPeriod = linesAddedInPeriod + linesRemovedInPeriod;
+
+    linesUpToPeriod += linesAddedInPeriod - linesRemovedInPeriod;
 
     ChangesPerPeriodType::const_reverse_iterator ritr = changesInPeriod.rbegin();
 
@@ -407,9 +420,13 @@ void GitNetwork::ComputeMonthlyActivy() const
 
     const unsigned int contributorsInPeriod = changesInPeriod.size();
 
+    const unsigned int contributorsUpToPeriod = cumulatedAuthors.size();
+
     const double fractionOfContributors = double(contributorsInPercentile) / contributorsInPeriod;
 
     std::cout << periodChanges.first << " ";
+    std::cout << linesUpToPeriod << " ";
+    std::cout << contributorsUpToPeriod << " ";
     std::cout << linesTouchedInPeriod << " ";
     std::cout << contributorsInPeriod << " ";
     std::cout << contributorsInPercentile << " ";

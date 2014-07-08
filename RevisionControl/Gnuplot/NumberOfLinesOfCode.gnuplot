@@ -1,7 +1,7 @@
-set output "FlatnessContributionsRatio.pdf"
+set output "NumberOfLinesOfCode.pdf"
 set term pdf
-set title "Fraction doing 80% of the Work"
-col = 7
+set title "Lines of Code"
+col = 2
 plot \
 "/tmp/LinuxKernelGitAnalysis.txt" using 1:col with lines title "Linux Kernel", \
 "/tmp/FirefoxGitAnalysis.txt" using 1:col with lines title "Firefox", \
