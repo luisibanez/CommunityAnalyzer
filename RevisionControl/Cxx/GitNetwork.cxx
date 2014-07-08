@@ -69,6 +69,9 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
       if( inputLine.find("Author:") != std::string::npos )
         {
         std::string authorName = inputLine.substr(8,std::string::npos);
+
+        if( authorName == "%aN" ) continue;  // Error case in the Firefox git repository
+
         commit.SetAuthor( authorName );
         Person author;
         author.SetName( authorName );
@@ -78,12 +81,18 @@ void GitNetwork::ParseInputFile( const char * inputFileName )
         if( inputLine.find("Date:") != std::string::npos )
           {
           std::string dateString = inputLine.substr(6,std::string::npos);
+
+          if( dateString.empty() ) continue;  // Error case in the Firefox git repository
+
           commit.SetDate( dateString );
 
           std::getline( inputFile, inputLine );
           if( inputLine.find("Committer:") != std::string::npos )
             {
             std::string committerName = inputLine.substr(11,std::string::npos);
+
+            if( committerName == "%cN" ) continue;  // Error case in the Firefox git repository
+
             commit.SetCommitter( committerName );
 
             // Now attempt to parse the changed files
@@ -349,11 +358,16 @@ void GitNetwork::ComputeMonthlyActivy() const
     ++citr;
     }
 
+  NumberOfLinesType linesUpToPeriod = 0;
+
+  std::set< std::string > cumulatedAuthors;
+
   for( const auto & periodChanges : changesPerPeriodPerAuthor )
     {
     const ChangesContainerType & changesPerAuthorInPeriod = periodChanges.second;
 
-    NumberOfLinesType linesTouchedInPeriod = 0;
+    NumberOfLinesType linesAddedInPeriod = 0;
+    NumberOfLinesType linesRemovedInPeriod = 0;
 
     typedef std::multiset< NumberOfLinesType > ChangesPerPeriodType;
 
@@ -363,13 +377,21 @@ void GitNetwork::ComputeMonthlyActivy() const
       {
       const auto & changesByAuthor = changes.second;
 
-      NumberOfLinesType linesTouchedByAuthor =
-        changesByAuthor.GetNumberOfLinesAdded() + changesByAuthor.GetNumberOfLinesRemoved();
+      cumulatedAuthors.insert( changesByAuthor.GetAuthorName() );
+
+      linesAddedInPeriod += changesByAuthor.GetNumberOfLinesAdded();
+      linesRemovedInPeriod += changesByAuthor.GetNumberOfLinesRemoved();
+
+      const NumberOfLinesType linesTouchedByAuthor =
+        changesByAuthor.GetNumberOfLinesAdded() +
+        changesByAuthor.GetNumberOfLinesRemoved();
 
       changesInPeriod.insert( linesTouchedByAuthor );
-
-      linesTouchedInPeriod += linesTouchedByAuthor;
       }
+
+    NumberOfLinesType linesTouchedInPeriod = linesAddedInPeriod + linesRemovedInPeriod;
+
+    linesUpToPeriod += linesAddedInPeriod - linesRemovedInPeriod;
 
     ChangesPerPeriodType::const_reverse_iterator ritr = changesInPeriod.rbegin();
 
@@ -398,9 +420,13 @@ void GitNetwork::ComputeMonthlyActivy() const
 
     const unsigned int contributorsInPeriod = changesInPeriod.size();
 
+    const unsigned int contributorsUpToPeriod = cumulatedAuthors.size();
+
     const double fractionOfContributors = double(contributorsInPercentile) / contributorsInPeriod;
 
     std::cout << periodChanges.first << " ";
+    std::cout << linesUpToPeriod << " ";
+    std::cout << contributorsUpToPeriod << " ";
     std::cout << linesTouchedInPeriod << " ";
     std::cout << contributorsInPeriod << " ";
     std::cout << contributorsInPercentile << " ";
