@@ -29,11 +29,18 @@ months = []
 for link in soup.find_all('a'):
     href = link.get('href')
     year = extract_year(href)
-    if year and year > 2010:
+    if year and year > 2012:
         months.append(href)
 
 message_set = set()
 message_links = []
+
+# for year in range(2013, 2015):
+#     for month in range(1, 13):
+#         if year >= 2014 and month >= 8:
+#             continue
+#         months.append(
+#             '?l=openssl-dev&r=1&b=' + str(year) + str(month).zfill(2) + '&w=2')
 
 
 def extract_message_id(href):
@@ -68,6 +75,8 @@ while len(message_links) > 0:
     message_link = message_links.pop()
     print(message_link + ': ' + str(len(message_links)) + ' remaining')
     message = {'_id': extract_message_id(message_link)}
+    if coll.find_one(message):
+        continue
     message_soup = BeautifulSoup(requests.get(base + message_link).text)
     for link in message_soup.find_all('a'):
         find_new_message(link)
@@ -79,6 +88,6 @@ while len(message_links) > 0:
         elif link.text == 'prev in thread':
             message['replyto'] = extract_message_id(href)
     coll.insert(message)
-    time.sleep(2)
+    time.sleep(1)
 
 print(message_set)
